@@ -1,0 +1,114 @@
+---
+layout: default
+title: Home
+---
+{%- comment -%}
+Home offers two browse modes:
+1) Timeline mode: single vertical list across both collections.
+2) Sections mode: horizontal scroll-snap container with Longform and Shortform columns.
+User preference stored in localStorage('browseMode').
+{%- endcomment -%}
+
+{% assign all = site.longform | concat: site.shortform | sort: 'date' | reverse %}
+{% assign now = site.time | date: "%s" %}
+
+<section id="timeline" class="timeline-view" aria-label="All items in chronological order">
+  <h2 class="visually-hidden">Timeline</h2>
+  <ul class="timeline-list">
+  {% for entry in all %}
+    {% assign expired = false %}
+    {% if entry.section == "shortform" and entry.expires_on %}
+      {% assign exp = entry.expires_on | date: "%s" %}
+      {% if exp < now %}{% assign expired = true %}{% endif %}
+    {% endif %}
+    {% unless expired %}
+    <li class="tl-item tl-{{ entry.section }}">
+      <a class="card" href="{{ site.baseurl }}{{ entry.url }}">
+        <div class="card-media">
+          {% if entry.images and entry.images.size > 0 %}
+            <img src="{{ site.baseurl }}{{ entry.images[0].src }}" alt="{{ entry.images[0].alt | default: '' }}">
+          {% else %}
+            <img src="{{ site.baseurl }}/assets/img/placeholder_card_400x300.png" alt="">
+          {% endif %}
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">{{ entry.title }}</h3>
+          <p class="card-meta">
+            <time datetime="{{ entry.date | date_to_xmlschema }}">{{ entry.date | date: "%b %-d, %Y" }}</time>
+            {% if entry.type %} · {{ entry.type }}{% endif %}
+          </p>
+          {% if entry.summary %}<p class="card-summary">{{ entry.summary }}</p>{% endif %}
+        </div>
+      </a>
+    </li>
+    {% endunless %}
+  {% endfor %}
+  </ul>
+</section>
+
+<section id="sections" class="sections-view" aria-label="Browse by sections">
+  <h2 class="visually-hidden">Sections</h2>
+  <div class="strip" tabindex="0">
+    <div class="panel panel-longform" aria-label="Longform">
+      <header class="panel-header"><h3>Longform</h3></header>
+      <ul class="panel-list">
+        {% for entry in site.longform reversed %}
+        <li>
+          <a class="card" href="{{ site.baseurl }}{{ entry.url }}">
+            <div class="card-media">
+              {% if entry.images and entry.images.size > 0 %}
+                <img src="{{ site.baseurl }}{{ entry.images[0].src }}" alt="{{ entry.images[0].alt | default: '' }}">
+              {% else %}
+                <img src="{{ site.baseurl }}/assets/img/placeholder_card_400x300.png" alt="">
+              {% endif %}
+            </div>
+            <div class="card-body">
+              <h4 class="card-title">{{ entry.title }}</h4>
+              <p class="card-meta"><time datetime="{{ entry.date | date_to_xmlschema }}">{{ entry.date | date: "%b %-d, %Y" }}</time></p>
+              {% if entry.summary %}<p class="card-summary">{{ entry.summary }}</p>{% endif %}
+            </div>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="panel panel-shortform" aria-label="Shortform">
+      <header class="panel-header"><h3>Shortform</h3></header>
+      <ul class="panel-list">
+        {% for entry in site.shortform %}
+          {% assign expired = false %}
+          {% if entry.expires_on %}
+            {% assign exp = entry.expires_on | date: "%s" %}
+            {% if exp < now %}{% assign expired = true %}{% endif %}
+          {% endif %}
+          {% unless expired %}
+          <li>
+            <a class="card" href="{{ site.baseurl }}{{ entry.url }}">
+              <div class="card-media">
+                {% if entry.images and entry.images.size > 0 %}
+                  <img src="{{ site.baseurl }}{{ entry.images[0].src }}" alt="{{ entry.images[0].alt | default: '' }}">
+                {% else %}
+                  <img src="{{ site.baseurl }}/assets/img/placeholder_icon_64x64.png" alt="">
+                {% endif %}
+              </div>
+              <div class="card-body">
+                <h4 class="card-title">{{ entry.title }}</h4>
+                <p class="card-meta">
+                  <time datetime="{{ entry.date | date_to_xmlschema }}">{{ entry.date | date: "%b %-d, %Y" }}</time>
+                  {% if entry.type %} · {{ entry.type }}{% endif %}
+                </p>
+                {% if entry.summary %}<p class="card-summary">{{ entry.summary }}</p>{% endif %}
+              </div>
+            </a>
+          </li>
+          {% endunless %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="nav-arrows" aria-hidden="false">
+    <button class="arrow left" aria-label="Previous section">◀</button>
+    <button class="arrow right" aria-label="Next section">▶</button>
+  </div>
+</section>

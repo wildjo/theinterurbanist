@@ -1,0 +1,94 @@
+:root{
+  --bg:#ffffff; --fg:#111; --muted:#555; --accent:#0c4a6e;
+  --size: 18px; /* base font size, adjustable via controls */
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family: 'Noto Sans', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: var(--size);
+  line-height: 1.5;
+  color: var(--fg);
+  background: var(--bg);
+}
+a{color:var(--accent); text-decoration: none}
+a:focus, button:focus{outline:3px solid #333; outline-offset: 2px}
+img{max-width:100%; height:auto; display:block}
+
+.site-header{
+  position: sticky; top:0; z-index: 5;
+  background: #fff; border-bottom: 2px solid #000;
+  padding: 0.5rem 1rem;
+}
+.brand{display:flex; gap:1rem; align-items:center}
+.brand-flag{width: min(100%, 500px); height:auto}
+.site-title{margin:0; font-size: clamp(1.25rem, 2.5vw, 2rem)}
+.site-desc{margin:0.25rem 0 0; color:var(--muted)}
+.controls{display:flex; gap:0.75rem; align-items:center; margin-top:0.5rem; flex-wrap: wrap}
+.btn{font-size:1rem; padding:0.5rem 0.75rem; border:2px solid #000; background:#fff; cursor:pointer; border-radius:10px}
+.btn:active{transform: translateY(1px)}
+
+.content{padding: 1rem}
+
+.visually-hidden{position:absolute !important; height:1px;width:1px; overflow:hidden; clip:rect(1px,1px,1px,1px)}
+
+/* Timeline list */
+.timeline-view{display:none}
+.mode-timeline .timeline-view{display:block}
+.timeline-list{list-style:none; margin:0; padding:0; display:grid; gap:1rem}
+.tl-item .card{display:grid; grid-template-columns: 160px 1fr; gap:0.75rem; border:3px solid #000; padding:0.5rem; border-radius:14px; background:#fff}
+.card-media{width:160px; height:120px; overflow:hidden; border:2px solid #000; border-radius:10px}
+.card-title{margin:0 0 0.25rem 0; font-size:1.15rem}
+.card-meta{margin:0 0 0.25rem 0; color:var(--muted)}
+.card-summary{margin:0; color:#222}
+
+/* Sections strip */
+.sections-view{display:block}
+.mode-timeline .sections-view{display:none}
+.strip{
+  display:flex; gap:1rem; overflow-x:auto; scroll-snap-type: x mandatory;
+  padding-bottom:2.5rem;
+}
+.panel{
+  min-width: min(100%, 800px);
+  scroll-snap-align: start;
+  border:3px solid #000; border-radius:16px; padding:0.5rem; background:#fff;
+}
+.panel-header{border-bottom:2px solid #000; margin-bottom:0.5rem}
+.panel-list{list-style:none; margin:0; padding:0; display:grid; gap:0.75rem}
+.panel-list .card{display:grid; grid-template-columns: 120px 1fr; gap:0.5rem; border:2px solid #000; padding:0.5rem; border-radius:12px; background:#fff}
+.panel-list .card .card-media{width:120px; height:90px}
+
+/* Arrows for horizontal nav */
+.nav-arrows{position:sticky; bottom:0.5rem; display:flex; justify-content:space-between; pointer-events:none}
+.nav-arrows .arrow{pointer-events:auto; font-size:2rem; padding:0.25rem 0.75rem; border:3px solid #000; background:#fff; border-radius:12px}
+
+/* Entry page */
+.entry{border:3px solid #000; border-radius:16px; padding:1rem; background:#fff}
+.entry-header{margin-bottom:0.5rem}
+.entry-title{margin:0 0 0.25rem 0}
+.meta{color:var(--muted)}
+.hero{margin:0 0 0.5rem 0}
+.hero img{border:3px solid #000; border-radius:12px}
+.video-list{padding-left:1rem}
+
+/* Page */
+.page{border:3px solid #000; border-radius:16px; padding:1rem; background:#fff}
+
+/* Footer */
+.site-footer{margin-top:1rem; border-top:2px solid #000; padding:0.5rem 1rem}
+.site-footer details summary{cursor:pointer; font-weight:700}
+
+/* Print styles */
+@media print{
+  .site-header, .nav-arrows, .controls { display:none !important; }
+  .panel, .entry, .page, .tl-item .card { border:1px solid #000 }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px){
+  .tl-item .card{grid-template-columns: 1fr}
+  .card-media{width:100%; height:auto}
+  .panel-list .card{grid-template-columns: 1fr}
+  .brand{flex-direction:column; align-items:flex-start}
+}
