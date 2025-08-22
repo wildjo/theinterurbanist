@@ -1,0 +1,35 @@
+# --- macOS junk ---
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+.TemporaryItems
+
+# --- Windows cruft (sometimes sneaks in) ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# --- Editors/IDE ---
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# --- Jekyll build artifacts ---
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+
+# --- Node tooling (if you add any) ---
+node_modules/
+
+# --- Env/config secrets (just in case) ---
+.env
+.env.*
