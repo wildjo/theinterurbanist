@@ -1,0 +1,29 @@
+- key: tales
+  label: Tales from the Independent
+  collection: longform
+- key: events
+  label: Events Notice
+  collection: shortform
+  filter_field: type
+  filter_value: event
+  sort: starts_at
+- key: management
+  label: From the Management
+  collection: shortform
+  filter_field: type
+  filter_value: management
+- key: lostfound
+  label: Lost & Found
+  collection: shortform
+  filter_field: type
+  filter_value: lostfound
+- key: safety
+  label: Safety Tips for Long Lives
+  collection: shortform
+  filter_field: type
+  filter_value: safety
+- key: visions
+  label: Visions of Independent Living
+  collection: shortform
+  filter_field: type
+  filter_value: photo

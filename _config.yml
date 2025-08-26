@@ -2,16 +2,17 @@ title: The Interurbanist
 description: SHAG Interurban's Information Clearinghouse
 url: https://wildjo.github.io
 baseurl: /theinterurbanist
+timezone: America/Los_Angeles
 plugins:
 - jekyll-feed
 - jekyll-seo-tag
 collections:
   longform:
     output: true
-    permalink: /long/:title/
+    permalink: /tales/:title/
   shortform:
     output: true
-    permalink: /short/:title/
+    permalink: /notes/:title/
 feed:
   collections:
   - longform
@@ -22,13 +23,13 @@ defaults:
     type: longform
   values:
     layout: entry
-    section: longform
+    section: tales
 - scope:
     path: ''
     type: shortform
   values:
     layout: entry
-    section: shortform
+    section: notes
 - scope:
     path: pages
   values:
@@ -36,5 +37,3 @@ defaults:
 markdown: kramdown
 kramdown:
   input: GFM
-sass:
-  style: compressed

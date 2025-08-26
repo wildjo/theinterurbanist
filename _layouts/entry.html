@@ -1,34 +1,51 @@
 ---
 layout: default
 ---
-<article class="entry entry-{{ page.section | default: 'post' }}">
+<article class="entry">
   <header class="entry-header">
     <h1 class="entry-title">{{ page.title }}</h1>
     <div class="meta">
-      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%b %-d, %Y" }}</time>
+      <time datetime="{{ page.date | date_to_xmlschema }}">
+        {% if page.date %}{{ page.date | date: "%b %-d, %Y" }}{% else %}Undated{% endif %}
+      </time>
       {% if page.author %} · <span class="author">{{ page.author }}</span>{% endif %}
       {% if page.type %} · <span class="type">{{ page.type }}</span>{% endif %}
     </div>
   </header>
-  {% if page.images and page.images.size > 0 %}
+
+  {% if page.images and page.images.size > 1 %}
+    <section class="gallery" aria-label="Image gallery">
+      <div class="gallery-strip">
+        {% for img in page.images %}
+          <a href="{{ img.src }}" class="lb" data-group="fm">
+            <img src="{{ img.src }}" alt="{{ img.alt | default: '' }}">
+          </a>
+        {% endfor %}
+      </div>
+      {% if page.images[0].caption %}<p class="cap">{{ page.images[0].caption }}</p>{% endif %}
+    </section>
+  {% elsif page.images and page.images.size == 1 %}
     <figure class="hero">
-      <img src="{{ site.baseurl }}{{ page.images[0].src }}" alt="{{ page.images[0].alt | default: '' }}">
+      <a href="{{ page.images[0].src }}" class="lb" data-group="single">
+        <img src="{{ page.images[0].src }}" alt="{{ page.images[0].alt | default: '' }}">
+      </a>
       {% if page.images[0].caption %}<figcaption>{{ page.images[0].caption }}</figcaption>{% endif %}
     </figure>
   {% endif %}
+
   <div class="entry-body">
     {{ content }}
   </div>
+
   {% if page.videos and page.videos.size > 0 %}
-    <section class="videos">
-      <h2>Videos</h2>
-      <ul class="video-list">
-        {% for v in page.videos %}
-          <li>
-            <a href="{{ v.url }}" rel="noopener" target="_blank">{{ v.description | default: v.url }}</a>
-          </li>
-        {% endfor %}
-      </ul>
-    </section>
+  <section class="videos">
+    <h2>Videos</h2>
+    <ul class="video-list">
+      {% for v in page.videos %}
+        <li><a href="{{ v.url }}" target="_blank" rel="noopener">
+          {{ v.description | default: v.url }}</a></li>
+      {% endfor %}
+    </ul>
+  </section>
   {% endif %}
 </article>
