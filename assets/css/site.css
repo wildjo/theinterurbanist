@@ -28,8 +28,12 @@ img{max-width:100%;height:auto;display:block}
 /* GRID by section (desktop) */
 .sections-view{display:block}
 .mode-timeline .sections-view{display:none}
-.grid{display:grid;gap:1rem;grid-template-columns:repeat(6,minmax(240px,1fr))}
-.col{border:var(--border) solid #000;border-radius:var(--radius);padding:0.5rem;background:#fff}
+.grid{
+  display:grid;
+  gap:1rem;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+}
+.col{ border: var(--border) solid #000; border-radius: var(--radius); padding: .5rem; background:#fff; min-width:0; }
 .col-header{border-bottom:2px solid #000;margin-bottom:0.5rem}
 .col-list{list-style:none;margin:0;padding:0;display:grid;gap:0.6rem}
 
@@ -73,16 +77,35 @@ img{max-width:100%;height:auto;display:block}
 .site-footer{margin-top:1rem;border-top:2px solid #000;padding:0.5rem 1rem}
 
 /* Responsive */
+/* Hide arrows by default on wide screens */
+.nav-arrows{ display: none; }
+
+/* Mobile/medium: turn sections into a horizontal strip with snap */
 @media (max-width: 1100px){
-  .grid{grid-template-columns:repeat(3,minmax(240px,1fr))}
+  .grid{
+    display: flex;
+    overflow-x: auto;
+    gap: 1rem;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 2.5rem;
+  }
+  .col{
+    flex: 0 0 88vw;   /* one section per "page" */
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+  .nav-arrows{ display: flex; }  /* arrows are useful again */
 }
+
+/* Small phones: minor polish, keep the strip */
 @media (max-width: 700px){
-  .grid{grid-template-columns:1fr}
-  .brand{flex-direction:column;align-items:flex-start}
-  .card{grid-template-columns:1fr}
-  .card-media{width:100%;height:auto}
+  .brand{ flex-direction: column; align-items: flex-start; }
+  .card{ grid-template-columns: 1fr; }
+  .card-media{ width: 100%; height: auto; }
 }
+
+/* Print */
 @media print{
-  .site-header,.nav-arrows,.controls{display:none!important}
-  .col,.entry,.page,.tl-item .card{border:1px solid #000}
+  .site-header, .nav-arrows, .controls{ display: none !important; }
+  .col, .entry, .page, .tl-item .card{ border: 1px solid #000; }
 }
