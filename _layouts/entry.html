@@ -5,34 +5,34 @@ layout: default
   <header class="entry-header">
     <h1 class="entry-title">{{ page.title }}</h1>
     <div class="meta">
-      <time datetime="{{ page.date | date_to_xmlschema }}">
-        {% capture fmt %}{% if page.section == 'notes' %}%b %-d, %Y • %l:%M %P{% else %}%b %-d, %Y{% endif %}{% endcapture %}
-        {% include date.html doc=page format=fmt %}
+      <time datetime="{% include date.html doc=page format='%Y-%m-%dT%H:%M:00%z' %}">
+        {% capture human %}{% if page.section == 'notes' %}%b %-d, %Y • %l:%M %P{% else %}%b %-d, %Y{% endif %}{% endcapture %}
+        {% include date.html doc=page format=human %}
       </time>
       {% if page.author %} · <span class="author">{{ page.author }}</span>{% endif %}
       {% if page.type %} · <span class="type">{{ page.type }}</span>{% endif %}
     </div>
   </header>
 
-  {% if page.images and page.images.size > 1 %}
-    <section class="gallery" aria-label="Image gallery">
-      <div class="gallery-strip">
-        {% for img in page.images %}
-          <a href="{{ img.src }}" class="lb" data-group="fm">
-            <img src="{{ img.src }}" alt="{{ img.alt | default: '' }}">
-          </a>
-        {% endfor %}
-      </div>
-      {% if page.images[0].caption %}<p class="cap">{{ page.images[0].caption }}</p>{% endif %}
-    </section>
-  {% elsif page.images and page.images.size == 1 %}
-    <figure class="hero">
-      <a href="{{ page.images[0].src }}" class="lb" data-group="single">
-        <img src="{{ page.images[0].src }}" alt="{{ page.images[0].alt | default: '' }}">
-      </a>
-      {% if page.images[0].caption %}<figcaption>{{ page.images[0].caption }}</figcaption>{% endif %}
-    </figure>
-  {% endif %}
+{% if page.images and page.images.size > 1 %}
+  <section class="gallery" aria-label="Image gallery">
+    <div class="gallery-strip">
+      {% for img in page.images %}
+        <a href="{{ img.src | relative_url }}" class="lb" data-group="fm">
+          <img src="{{ img.src | relative_url }}" alt="{{ img.alt | default: '' }}">
+        </a>
+      {% endfor %}
+    </div>
+    {% if page.images[0].caption %}<p class="cap">{{ page.images[0].caption }}</p>{% endif %}
+  </section>
+{% elsif page.images and page.images.size == 1 %}
+  <figure class="hero">
+    <a href="{{ page.images[0].src | relative_url }}" class="lb" data-group="single">
+      <img src="{{ page.images[0].src | relative_url }}" alt="{{ page.images[0].alt | default: '' }}">
+    </a>
+    {% if page.images[0].caption %}<figcaption>{{ page.images[0].caption }}</figcaption>{% endif %}
+  </figure>
+{% endif %}
 
   <div class="entry-body">
     {{ content }}
