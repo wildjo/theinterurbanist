@@ -6,7 +6,8 @@ layout: default
     <h1 class="entry-title">{{ page.title }}</h1>
     <div class="meta">
       <time datetime="{{ page.date | date_to_xmlschema }}">
-        {% if page.date %}{{ page.date | date: "%b %-d, %Y" }}{% else %}Undated{% endif %}
+        {% capture fmt %}{% if page.section == 'notes' %}%b %-d, %Y • %l:%M %P{% else %}%b %-d, %Y{% endif %}{% endcapture %}
+        {% include date.html doc=page format=fmt %}
       </time>
       {% if page.author %} · <span class="author">{{ page.author }}</span>{% endif %}
       {% if page.type %} · <span class="type">{{ page.type }}</span>{% endif %}

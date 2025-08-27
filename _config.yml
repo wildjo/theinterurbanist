@@ -9,10 +9,10 @@ plugins:
 collections:
   longform:
     output: true
-    permalink: /tales/:title/
+    permalink: /tales/:path/
   shortform:
     output: true
-    permalink: /notes/:title/
+    permalink: /notes/:path/
 feed:
   collections:
   - longform
