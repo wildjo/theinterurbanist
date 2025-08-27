@@ -1,7 +1,9 @@
 <header class="site-header">
   <a class="skip" href="#content">Skip to content</a>
   <div class="brand">
-    <img src="{{ site.baseurl }}/assets/img/the_interurbanist_flag_1411x294.jpg" alt="The Interurbanist flag" class="brand-flag">
+    <a href="{{ site.baseurl }}/">
+      <img src="{{ site.baseurl }}/assets/img/the_interurbanist_flag_1411x294.jpg" alt="The Interurbanist flag" class="brand-flag">
+    </a>
     <div class="brand-text">
       <h1 class="site-title">{{ site.title }}</h1>
       {% assign all = site.longform | concat: site.shortform | sort: 'path' | reverse %}
