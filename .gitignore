@@ -33,3 +33,10 @@ node_modules/
 # --- Env/config secrets (just in case) ---
 .env
 .env.*
+
+# Local preview helpers (keep on your machine only)
+Gemfile
+Gemfile.lock
+serve.command
+.bundle/
+vendor/
