@@ -4,10 +4,13 @@
     <img src="{{ site.baseurl }}/assets/img/the_interurbanist_flag_1411x294.jpg" alt="The Interurbanist flag" class="brand-flag">
     <div class="brand-text">
       <h1 class="site-title">{{ site.title }}</h1>
-      {% assign all = site.longform | concat: site.shortform | sort: 'date' | reverse %}
+      {% assign all = site.longform | concat: site.shortform | sort: 'path' | reverse %}
       {% assign latest = all | first %}
-      <p class="site-desc">{{ site.description }} | Most recent post:
-        {% if latest and latest.date %}{{ latest.date | date: "%b %-d" }}{% else %}n/a{% endif %}.
+      <p class="site-desc">
+        {{ site.description }} | Most recent post:
+        {% if latest %}
+          {% include date.html doc=latest format="%b %-d" %}
+        {% else %}n/a{% endif %}.
       </p>
     </div>
   </div>
