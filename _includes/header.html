@@ -2,7 +2,8 @@
 <div class="brand">
 <a href="{{ '/' | relative_url }}">
   <img src="{{ '/assets/img/the_interurbanist_flag_1411x294.jpg' | relative_url }}" alt="The Interurbanist banner" class="brand-flag" width="700" height="150">
-</a>  <div>
+</a>  
+	<div>
     <h1 class="site-title">The Interurbanist</h1>
     {% assign tales = site.pages | where_exp:"p","p.dir contains '/tales/'"  %}
     {% assign notes = site.pages | where_exp:"p","p.dir contains '/notes/'"  %}
@@ -13,11 +14,5 @@
       Most recent post:
       {% if latest %}{% include date.html doc=latest format="%b %-d" %}{% else %}n/a{% endif %}.
     </p>
-    <div class="controls" role="group" aria-label="View options">
-      <button class="btn" id="modeTimeline" aria-pressed="false">🕘 Timeline</button>
-      <button class="btn" id="modeSections" aria-pressed="true">🗂 Sections</button>
-      <button class="btn" id="fontSmall" aria-label="Make text smaller">A−</button>
-      <button class="btn" id="fontLarge" aria-label="Make text larger">A+</button>
-    </div>
   </div>
 </div>

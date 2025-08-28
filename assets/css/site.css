@@ -114,3 +114,99 @@ img{max-width:100%;height:auto;display:block}
   html:focus-within { scroll-behavior: auto; }
   .grid { scroll-behavior: auto; }
 }
+
+
+/* For beauteous video embedding */
+
+.video-grid{
+  display:grid;
+  gap:1rem;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+}
+
+.video-embed{
+  margin:0;
+  border:2px solid #000;
+  border-radius:12px;
+  overflow:hidden;
+  background:#000;
+  color:#fff;                 /* default text color inside component */
+}
+
+.video-embed iframe{
+  width:100%;
+  aspect-ratio:16/9;
+  display:block;
+  border:0;
+  background:#000;
+}
+
+/* Caption below the video */
+.video-cap{
+  margin:0.25rem 0.5rem 0.5rem;
+  padding:0.5rem 0.75rem;
+  font-size:0.95rem;
+  color:#fff;                 /* <-- the important bit */
+  background:#000;
+  border-top:1px solid rgba(255,255,255,.15);
+}
+
+.video-cap a{ color:#fff; text-decoration:underline; }
+.video-cap a:visited{ color:#e6e6e6; }
+
+
+/* Tabs under the banner */
+.tabbar{
+  display:flex;
+  gap:.5rem 1rem;
+  align-items:flex-end;
+  justify-content:flex-start;
+
+  /* space from logo, sit ON the header divider */
+  margin-top:.4rem;
+  margin-bottom:-2px;     /* pulls tabs down to kiss the border line */
+  padding:0 .25rem;
+}
+
+.tabbar .tab{
+  display:inline-block;
+  padding:.5rem .9rem;
+  font-weight:600;
+  border:3px solid #000;
+  border-bottom:none;     /* classic tab shape */
+  border-radius:12px 12px 0 0;
+  background:#fff;
+  line-height:1;
+}
+
+.tabbar .tab:hover{ background:#f5f5f5; }
+.tabbar .tab:focus{ outline:2px dashed #000; outline-offset:2px; }
+
+/* Highlight active tab on Home (HTML class toggled by JS) */
+html.mode-timeline .tabbar .tab[data-mode="timeline"],
+html.mode-sections .tabbar .tab[data-mode="sections"]{
+  background:#eaeaea;
+}
+
+/* Compact on narrow screens */
+@media (max-width:700px){
+  .tabbar{ flex-wrap:wrap; margin-top:.25rem; }
+}
+
+
+/* tighten tab bar against the header/content divider */
+.site-header{
+  margin-bottom: 0;
+  padding-bottom: clamp(.2rem, .6vw, .5rem);
+}
+
+.tabbar{
+  margin-top: .25rem;   /* tiny breath under the flag */
+  margin-bottom: -6px;  /* pull tabs down onto the line */
+  padding-bottom: 0;
+}
+
+.tabbar .tab{ margin-bottom: 0; }
+
+/* if the first thing in main is adding extra space, zero it */
+main > *:first-child{ margin-top: 0; }

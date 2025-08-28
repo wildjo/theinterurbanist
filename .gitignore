@@ -40,3 +40,6 @@ Gemfile.lock
 serve.command
 .bundle/
 vendor/
+
+# tooling
+_tools/inventory/

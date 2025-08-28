@@ -1,86 +1,120 @@
-(function(){
-  // Font size controls
-  const root=document.documentElement;
-  const getSize=()=>parseInt(getComputedStyle(root).getPropertyValue('--size'))||18;
-  const setSize=(px)=>{root.style.setProperty('--size',px+'px');localStorage.setItem('fontSize',px);};
-  document.getElementById('fontSmall')?.addEventListener('click',()=>setSize(Math.max(14,getSize()-2)));
-  document.getElementById('fontLarge')?.addEventListener('click',()=>setSize(Math.min(28,getSize()+2)));
-  const savedSize=parseInt(localStorage.getItem('fontSize')); if(!isNaN(savedSize)) setSize(savedSize);
+// site.js — sane, self-contained behaviors
+(() => {
+  "use strict";
 
-  // Mode (Timeline vs Sections)
-  const body=document.body;
-  const setMode=(m)=>{
-    body.classList.toggle('mode-timeline',m==='timeline');
-    body.classList.toggle('mode-sections',m!=='timeline');
-    localStorage.setItem('browseMode',m);
-    requestAnimationFrame(updateArrows);
-  };
-  document.getElementById('modeTimeline')?.addEventListener('click',()=>setMode('timeline'));
-  document.getElementById('modeSections')?.addEventListener('click',()=>setMode('sections'));
-  setMode(localStorage.getItem('browseMode')==='timeline'?'timeline':'sections');
+  const qs  = (sel, ctx=document) => ctx.querySelector(sel);
+  const qsa = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
 
-  // Section navigation + arrows logic
-  const container=document.querySelector('.grid');
-  const nav=document.querySelector('.nav-arrows');
-  const leftBtn=nav?.querySelector('.left');
-  const rightBtn=nav?.querySelector('.right');
+  // ----- View switching (Timeline ↔ Sections) -----
+  const sectionsView = qs(".sections-view");
+  const timelineView = qs(".timeline-view");
+  const onHome = !!sectionsView && !!timelineView;
 
-  function isHorizontal(){
-    if(!container) return false;
-    const style=getComputedStyle(container);
-    return style.display==='flex' && style.overflowX!=='visible';
-  }
-
-  function pageWidth(){
-    const r=getComputedStyle(document.documentElement).getPropertyValue('--page');
-    const num=parseFloat(r);
-    if(!isNaN(num)) return container?.clientWidth ? Math.min(container.clientWidth*0.96, window.innerWidth*0.96) : window.innerWidth*0.96;
-    return container.clientWidth*0.9;
-  }
-
-  function scrollHorizontal(dir){
-    const page = container.clientWidth || window.innerWidth;
-    container.scrollBy({left: dir * page * 0.9, behavior:'smooth'});
-  }
-
-  function scrollVerticalToCol(dir){
-    const cols=[...document.querySelectorAll('.grid .col')];
-    if(!cols.length) return;
-    const tops=cols.map(el=>Math.abs(el.getBoundingClientRect().top));
-    let i=tops.indexOf(Math.min(...tops));
-    i=Math.max(0,Math.min(cols.length-1,i+dir));
-    cols[i].scrollIntoView({behavior:'smooth',block:'start'});
-  }
-
-  function updateArrows(){
-    if(!nav || !container){ return; }
-    // Only manage arrows in sections mode + horizontal layout
-    if(!isHorizontal() || body.classList.contains('mode-timeline')){
-      nav.hidden = true;
-      return;
-    }
-    const max = container.scrollWidth - container.clientWidth - 1;
-    const x = container.scrollLeft;
-    const canL = x > 2;
-    const canR = x < max - 2;
-
-    // If both directions are available, hide the whole arrow bar.
-    if (canL && canR) {
-      nav.hidden = true;
+  function show(mode) {
+    if (!onHome) return;
+    if (mode === "sections") {
+      sectionsView.style.display = "";
+      timelineView.style.display = "none";
+      document.documentElement.classList.add("mode-sections");
+      document.documentElement.classList.remove("mode-timeline");
     } else {
-      nav.hidden = !(canL || canR);
-      if (!nav.hidden) {
-        leftBtn.hidden = !canL;
-        rightBtn.hidden = !canR;
-      }
+      sectionsView.style.display = "none";
+      timelineView.style.display = "";
+      document.documentElement.classList.add("mode-timeline");
+      document.documentElement.classList.remove("mode-sections");
     }
   }
 
-  leftBtn?.addEventListener('click',()=>isHorizontal()?scrollHorizontal(-1):scrollVerticalToCol(-1));
-  rightBtn?.addEventListener('click',()=>isHorizontal()?scrollHorizontal(1):scrollVerticalToCol(1));
+  // Honor ?view=sections|timeline on load
+  document.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(location.search);
+    const requested = params.get("view");
+    if (onHome && (requested === "sections" || requested === "timeline")) {
+      show(requested);
+    }
 
-  container?.addEventListener('scroll', updateArrows, {passive:true});
-  window.addEventListener('resize', ()=>requestAnimationFrame(updateArrows));
-  window.addEventListener('load', updateArrows);
-  updateArrows();
+    // On Home, intercept tab clicks for instant switching; elsewhere, let them navigate home
+    if (onHome) {
+      qsa("a.mode-toggle[data-mode]").forEach(a => {
+        a.addEventListener("click", ev => {
+          ev.preventDefault();
+          const mode = a.dataset.mode === "sections" ? "sections" : "timeline";
+          show(mode);
+          const url = new URL(location.href);
+          url.searchParams.set("view", mode);
+          history.replaceState({}, "", url);
+        });
+      });
+    }
+  });
+
+  // ----- Font size controls (persisted) -----
+  const minScale = 0.85, maxScale = 1.6, step = 0.1;
+  let scale = parseFloat(localStorage.getItem("uiScale") || "1");
+  applyScale();
+
+  function applyScale() {
+    document.documentElement.style.fontSize = (scale * 100) + "%";
+  }
+  function saveScale() {
+    localStorage.setItem("uiScale", String(scale));
+    applyScale();
+  }
+
+  qsa(".fs-inc").forEach(btn => btn.addEventListener("click", () => {
+    scale = Math.min(maxScale, +(scale + step).toFixed(2));
+    saveScale();
+  }));
+  qsa(".fs-dec").forEach(btn => btn.addEventListener("click", () => {
+    scale = Math.max(minScale, +(scale - step).toFixed(2));
+    saveScale();
+  }));
+
+  // ----- Horizontal navigation in Sections view (arrows + swipe) -----
+  const scroller = qs(".grid");
+  const leftBtn  = qs(".nav-arrows .left");
+  const rightBtn = qs(".nav-arrows .right");
+
+  if (scroller && leftBtn && rightBtn) {
+    const page = () => Math.max(1, Math.floor(scroller.clientWidth * 0.9));
+
+    const updateArrows = () => {
+      const max = scroller.scrollWidth - scroller.clientWidth;
+      if (max <= 4) {
+        leftBtn.style.display = "none";
+        rightBtn.style.display = "none";
+        return;
+      }
+      leftBtn.style.display  = scroller.scrollLeft > 4 ? "flex" : "none";
+      rightBtn.style.display = scroller.scrollLeft < max - 4 ? "flex" : "none";
+    };
+
+    leftBtn.addEventListener("click",  () => scroller.scrollBy({ left: -page(), behavior: "smooth" }));
+    rightBtn.addEventListener("click", () => scroller.scrollBy({ left:  page(), behavior: "smooth" }));
+    scroller.addEventListener("scroll", updateArrows, { passive: true });
+    window.addEventListener("resize", updateArrows);
+    updateArrows();
+
+    // basic swipe (don’t fight vertical scrolling)
+    let startX = null, startY = null;
+    scroller.addEventListener("touchstart", e => {
+      if (e.touches.length !== 1) return;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    }, { passive: true });
+
+    scroller.addEventListener("touchend", e => {
+      if (startX == null || startY == null) return;
+      const dx = e.changedTouches[0].clientX - startX;
+      const dy = Math.abs(e.changedTouches[0].clientY - startY);
+      startX = startY = null;
+      if (dy > 40 || Math.abs(dx) < 50) return; // vertical intent or tiny swipe
+      scroller.scrollBy({ left: dx > 0 ? -page() : page(), behavior: "smooth" });
+    });
+  }
+
+  // ----- Lightbox safe init (if present) -----
+  if (typeof window.Lightbox === "object" && typeof window.Lightbox.init === "function") {
+    try { window.Lightbox.init(); } catch (_) {}
+  }
 })();

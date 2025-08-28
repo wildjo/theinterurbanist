@@ -1,0 +1,46 @@
+{%- comment -%}
+Usage: {% include video_embed.html url=v.url title=v.description %}
+Supports:
+- youtu.be/<id>
+- youtube.com/watch?v=<id>
+- youtube.com/shorts/<id>
+- youtube.com/embed/<id>
+- vimeo.com/<id>
+Falls back to a plain link if it can’t parse.
+{%- endcomment -%}
+
+{%- assign u = include.url | to_s -%}
+{%- assign title = include.title | default: 'Video' -%}
+{%- assign src = '' -%}
+
+{%- if u contains 'youtu.be/' -%}
+  {%- assign id = u | split:'youtu.be/' | last | split:'?' | first -%}
+  {%- assign src = 'https://www.youtube.com/embed/' | append: id -%}
+{%- elsif u contains 'youtube.com/watch' or u contains 'm.youtube.com/watch' -%}
+  {%- assign id = u | split:'v=' | last | split:'&' | first -%}
+  {%- assign src = 'https://www.youtube.com/embed/' | append: id -%}
+{%- elsif u contains 'youtube.com/shorts/' -%}
+  {%- assign id = u | split:'shorts/' | last | split:'?' | first -%}
+  {%- assign src = 'https://www.youtube.com/embed/' | append: id -%}
+{%- elsif u contains 'youtube.com/embed/' -%}
+  {%- assign id = u | split:'embed/' | last | split:'?' | first -%}
+  {%- assign src = 'https://www.youtube.com/embed/' | append: id -%}
+{%- elsif u contains 'vimeo.com/' -%}
+  {%- assign id = u | split:'vimeo.com/' | last | split:'?' | first | split:'/' | last -%}
+  {%- assign src = 'https://player.vimeo.com/video/' | append: id -%}
+{%- endif -%}
+
+{%- if src != '' -%}
+  <figure class="video-embed">
+    <iframe
+      src="{{ src }}"
+      title="{{ title | escape }}"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allowfullscreen
+      loading="lazy"></iframe>
+    {%- if include.title -%}<figcaption class="video-cap">{{ include.title }}</figcaption>{%- endif -%}
+  </figure>
+{%- else -%}
+  <p><a href="{{ u }}" target="_blank" rel="noopener">{{ include.title | default: u }}</a></p>
+{%- endif -%}

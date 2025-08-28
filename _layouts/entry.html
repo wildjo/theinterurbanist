@@ -60,14 +60,14 @@ layout: default
     {{ content }}
   </div>
 
-  {% if page.videos and page.videos.size > 0 %}
-    <section class="videos">
-      <h2>Videos</h2>
-      <ul class="video-list">
-        {% for v in page.videos %}
-          <li><a href="{{ v.url }}" target="_blank" rel="noopener">{{ v.description | default: v.url }}</a></li>
-        {% endfor %}
-      </ul>
-    </section>
-  {% endif %}
+	{% if page.videos and page.videos.size > 0 %}
+	  <section class="videos">
+	    <h2>Videos</h2>
+	    <div class="video-grid">
+	      {% for v in page.videos %}
+	        {% include video_embed.html url=v.url title=v.description %}
+	      {% endfor %}
+	    </div>
+	  </section>
+	{% endif %}
 </article>
