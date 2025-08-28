@@ -1,29 +1,23 @@
-<header class="site-header">
-  <a class="skip" href="#content">Skip to content</a>
-  <div class="brand">
-    <a href="{{ site.baseurl }}/">
-      <img src="{{ site.baseurl }}/assets/img/the_interurbanist_flag_1411x294.jpg" alt="The Interurbanist flag" class="brand-flag">
-    </a>
-    <div class="brand-text">
-      <h1 class="site-title">{{ site.title }}</h1>
-      {% assign all = site.longform | concat: site.shortform | sort: 'path' | reverse %}
-      {% assign latest = all | first %}
-      <p class="site-desc">
-        {{ site.description }} | Most recent post:
-        {% if latest %}
-          {% include date.html doc=latest format="%b %-d" %}
-        {% else %}n/a{% endif %}.
-      </p>
+<a class="skip" href="#content">Skip to content</a>
+<div class="brand">
+<a href="{{ '/' | relative_url }}">
+  <img src="{{ '/assets/img/the_interurbanist_flag_1411x294.jpg' | relative_url }}" alt="The Interurbanist banner" class="brand-flag" width="700" height="150">
+</a>  <div>
+    <h1 class="site-title">The Interurbanist</h1>
+    {% assign tales = site.pages | where_exp:"p","p.dir contains '/tales/'"  %}
+    {% assign notes = site.pages | where_exp:"p","p.dir contains '/notes/'"  %}
+    {% assign all = tales | concat: notes | sort: 'path' | reverse %}
+    {% assign latest = all | first %}
+    <p class="site-desc">
+      SHAG Interurban's Information Clearinghouse |
+      Most recent post:
+      {% if latest %}{% include date.html doc=latest format="%b %-d" %}{% else %}n/a{% endif %}.
+    </p>
+    <div class="controls" role="group" aria-label="View options">
+      <button class="btn" id="modeTimeline" aria-pressed="false">🕘 Timeline</button>
+      <button class="btn" id="modeSections" aria-pressed="true">🗂 Sections</button>
+      <button class="btn" id="fontSmall" aria-label="Make text smaller">A−</button>
+      <button class="btn" id="fontLarge" aria-label="Make text larger">A+</button>
     </div>
   </div>
-  <div class="controls">
-    <div class="font-controls" role="group" aria-label="Font size">
-      <button id="fontSmall" class="btn" aria-label="Smaller text">A−</button>
-      <button id="fontLarge" class="btn" aria-label="Larger text">A+</button>
-    </div>
-    <div class="mode-controls" role="group" aria-label="Browse mode">
-      <button id="modeTimeline" class="btn">Timeline</button>
-      <button id="modeSections" class="btn">By Section</button>
-    </div>
-  </div>
-</header>
+</div>

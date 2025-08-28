@@ -1,39 +1,20 @@
-title: The Interurbanist
-description: SHAG Interurban's Information Clearinghouse
-url: https://wildjo.github.io
-baseurl: /theinterurbanist
-timezone: America/Los_Angeles
-plugins:
-- jekyll-feed
-- jekyll-seo-tag
-collections:
-  longform:
-    output: true
-    permalink: /tales/:path/
-  shortform:
-    output: true
-    permalink: /notes/:path/
-feed:
-  collections:
-  - longform
-  - shortform
+title: "The Interurbanist: What's Happening at the SHAG Interurban"
+description: "SHAG Interurban's Information Clearinghouse"
+url: "https://wildjo.github.io"
+baseurl: "/theinterurbanist"
+timezone: "America/Los_Angeles"
+
+# Using page bundles: each story is a folder with index.md plus its media.
 defaults:
-- scope:
-    path: ''
-    type: longform
-  values:
-    layout: entry
-    section: tales
-- scope:
-    path: ''
-    type: shortform
-  values:
-    layout: entry
-    section: notes
-- scope:
-    path: pages
-  values:
-    layout: page
-markdown: kramdown
-kramdown:
-  input: GFM
+  - scope: { path: "tales" }
+    values: { layout: entry, section: tales }
+  - scope: { path: "notes" }
+    values: { layout: entry, section: notes }
+
+exclude:
+  - _local
+
+plugins:
+  - jekyll-seo-tag
+
+permalink: pretty

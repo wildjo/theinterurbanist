@@ -1,26 +1,32 @@
 {%- comment -%}
-Outputs a human date for a doc, preferring front matter `date:`.
-If missing, derive from filename: YYYY-MM-DD[-HHMM]-slug.md.
-Usage: {% include date.html doc=entry format="%b %-d, %Y" %}
+Outputs a human date for a page. Prefers front matter `date:`.
+Otherwise derives from bundle folder name (last segment of doc.dir) or doc.name if not index.
+Supports YYYY-MM-DD[-HHMM]. Usage: {% include date.html doc=page format="%b %-d, %Y" %}
 {%- endcomment -%}
 
 {%- assign d = include.doc.date -%}
+
 {%- if d == nil or d == empty -%}
-  {%- assign fname = include.doc.name | replace: '.markdown','' | replace: '.md','' -%}
-  {%- assign parts = fname | split: '-' -%}
-  {%- if parts.size >= 3 -%}
-    {%- assign yyyy = parts[0] -%}
-    {%- assign mm   = parts[1] -%}
-    {%- assign dd   = parts[2] -%}
-    {%- comment -%} Optional HHMM in 4th segment {%- endcomment -%}
-    {%- assign hhmm = parts[3] -%}
+  {%- assign base = include.doc.name | replace: '.markdown','' | replace: '.md','' -%}
+  {%- if base == 'index' or base == '' -%}
+    {%- assign parts = include.doc.dir | split:'/' | reverse -%}
+    {%- assign folder = '' -%}
+    {%- for seg in parts %}{% if seg != '' %}{% assign folder = seg %}{% break %}{% endif %}{% endfor %}
+    {%- assign base = folder -%}
+  {%- endif -%}
+  {%- assign bits = base | split:'-' -%}
+  {%- if bits.size >= 3 -%}
+    {%- assign yyyy = bits[0] -%}
+    {%- assign mm   = bits[1] -%}
+    {%- assign dd   = bits[2] -%}
+    {%- assign hhmm = bits[3] -%}
     {%- assign hhmm_digits = hhmm | remove:'0' | remove:'1' | remove:'2' | remove:'3' | remove:'4' | remove:'5' | remove:'6' | remove:'7' | remove:'8' | remove:'9' -%}
     {%- if hhmm and hhmm.size == 4 and hhmm_digits == '' -%}
       {%- assign hh = hhmm | slice: 0, 2 -%}
       {%- assign mi = hhmm | slice: 2, 2 -%}
-      {%- assign datestr = yyyy | append: '-' | append: mm | append: '-' | append: dd | append: ' ' | append: hh | append: ':' | append: mi -%}
+      {%- assign datestr = yyyy | append:'-' | append:mm | append:'-' | append:dd | append:' ' | append:hh | append:':' | append:mi -%}
     {%- else -%}
-      {%- assign datestr = yyyy | append: '-' | append: mm | append: '-' | append: dd -%}
+      {%- assign datestr = yyyy | append:'-' | append:mm | append:'-' | append:dd -%}
     {%- endif -%}
     {%- assign d = datestr -%}
   {%- endif -%}
@@ -31,4 +37,3 @@ Usage: {% include date.html doc=entry format="%b %-d, %Y" %}
 {%- else -%}
   Undated
 {%- endif -%}
-

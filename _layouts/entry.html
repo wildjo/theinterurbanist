@@ -14,39 +14,60 @@ layout: default
     </div>
   </header>
 
-{% if page.images and page.images.size > 1 %}
-  <section class="gallery" aria-label="Image gallery">
-    <div class="gallery-strip">
-      {% for img in page.images %}
-        <a href="{{ img.src | relative_url }}" class="lb" data-group="fm">
-          <img src="{{ img.src | relative_url }}" alt="{{ img.alt | default: '' }}">
-        </a>
-      {% endfor %}
-    </div>
-    {% if page.images[0].caption %}<p class="cap">{{ page.images[0].caption }}</p>{% endif %}
-  </section>
-{% elsif page.images and page.images.size == 1 %}
-  <figure class="hero">
-    <a href="{{ page.images[0].src | relative_url }}" class="lb" data-group="single">
-      <img src="{{ page.images[0].src | relative_url }}" alt="{{ page.images[0].alt | default: '' }}">
-    </a>
-    {% if page.images[0].caption %}<figcaption>{{ page.images[0].caption }}</figcaption>{% endif %}
-  </figure>
-{% endif %}
+  {% if page.images and page.images.size > 1 %}
+    <section class="gallery" aria-label="Image gallery">
+      <div class="gallery-strip">
+        {% for img in page.images %}
+          {% assign _src = img.src %}
+          {% assign first = _src | slice: 0, 1 %}
+          {% assign cleaned = _src | replace: './', '' %}
+          {% if _src contains '://' %}
+            {% assign resolved = _src %}
+          {% elsif first == '/' %}
+            {% assign resolved = _src %}
+          {% else %}
+            {% assign base = page.path | replace: page.name, '' %}
+            {% assign resolved = '/' | append: base | append: cleaned %}
+          {% endif %}
+          <a href="{{ resolved | relative_url }}" class="lb" data-group="fm">
+            <img src="{{ resolved | relative_url }}" alt="{{ img.alt | default: '' }}">
+          </a>
+        {% endfor %}
+      </div>
+      {% if page.images[0].caption %}<p class="cap">{{ page.images[0].caption }}</p>{% endif %}
+    </section>
+  {% elsif page.images and page.images.size == 1 %}
+    {% assign _src = page.images[0].src %}
+    {% assign first = _src | slice: 0, 1 %}
+    {% assign cleaned = _src | replace: './', '' %}
+    {% if _src contains '://' %}
+      {% assign resolved = _src %}
+    {% elsif first == '/' %}
+      {% assign resolved = _src %}
+    {% else %}
+      {% assign base = page.path | replace: page.name, '' %}
+      {% assign resolved = '/' | append: base | append: cleaned %}
+    {% endif %}
+    <figure class="hero">
+      <a href="{{ resolved | relative_url }}" class="lb" data-group="single">
+        <img src="{{ resolved | relative_url }}" alt="{{ page.images[0].alt | default: '' }}">
+      </a>
+      {% if page.images[0].caption %}<figcaption>{{ page.images[0].caption }}</figcaption>{% endif %}
+    </figure>
+  {% endif %}
 
   <div class="entry-body">
     {{ content }}
   </div>
 
   {% if page.videos and page.videos.size > 0 %}
-  <section class="videos">
-    <h2>Videos</h2>
-    <ul class="video-list">
-      {% for v in page.videos %}
-        <li><a href="{{ v.url }}" target="_blank" rel="noopener">
-          {{ v.description | default: v.url }}</a></li>
-      {% endfor %}
-    </ul>
-  </section>
+    <section class="videos">
+      <h2>Videos</h2>
+      <ul class="video-list">
+        {% for v in page.videos %}
+          <li><a href="{{ v.url }}" target="_blank" rel="noopener">{{ v.description | default: v.url }}</a></li>
+        {% endfor %}
+      </ul>
+    </section>
   {% endif %}
 </article>

@@ -2,97 +2,159 @@
 layout: default
 title: Home
 ---
-{% assign now = site.time | date: "%s" %}
+<div class="sections-view">
+  {% assign tales = site.pages | where_exp:"p","p.url contains '/tales/'" %}
+  {% assign notes = site.pages | where_exp:"p","p.url contains '/notes/'" %}
 
-<section id="timeline" class="timeline-view" aria-label="All items in chronological order">
-  <h2 class="visually-hidden">Timeline</h2>
-  {% assign all = site.longform | concat: site.shortform | sort: 'path' | reverse %}
-  <ul class="timeline-list">
-  {% for entry in all %}
-    {% assign expired = false %}
-    {% if entry.expires_on %}{% assign exp = entry.expires_on | date: "%s" %}{% if exp < now %}{% assign expired = true %}{% endif %}{% endif %}
-    {% unless expired %}
-    <li class="tl-item tl-{{ entry.section | default: 'post' }}">
-      <a class="card" href="{{ site.baseurl }}{{ entry.url }}">
-        <div class="card-media">
-          {% if entry.images and entry.images.size > 0 %}
-            <img src="{{ site.baseurl }}{{ entry.images[0].src }}" alt="{{ entry.images[0].alt | default: '' }}">
-          {% else %}
-            <img src="{{ site.baseurl }}/assets/img/placeholder_card_400x300.png" alt="">
-          {% endif %}
-        </div>
-        <div class="card-body">
-          <h3 class="card-title">{{ entry.title }}</h3>
-          <p class="card-meta"><time>
-            {% capture fmt %}{% if entry.section == 'notes' %}%b %-d, %Y • %l:%M %P{% else %}%b %-d, %Y{% endif %}{% endcapture %}
-            {% include date.html doc=entry format=fmt %}
-          </time>{% if entry.type %} · {{ entry.type }}{% endif %}</p>
-          {% if entry.summary %}<p class="card-summary">{{ entry.summary }}</p>{% endif %}
-        </div>
-      </a>
-    </li>
-    {% endunless %}
-  {% endfor %}
-  </ul>
-</section>
-
-<section id="sections" class="sections-view" aria-label="Browse by section">
-  <h2 class="visually-hidden">Sections</h2>
   <div class="grid">
-    {% for s in site.data.sections %}
-      <div class="col">
-        <header class="col-header"><h3>{{ s.label }}</h3></header>
-        <ul class="col-list">
-          {% if s.collection == "longform" %}
-            {% assign list = site.longform | sort: 'path' | reverse %}
-          {% else %}
-            {% assign list = site.shortform %}
-            {% if s.filter_field and s.filter_value %}
-              {% assign list = list | where: s.filter_field, s.filter_value %}
-            {% endif %}
-            {% if s.sort == "starts_at" %}
-              {% assign list = list | sort: 'starts_at' %}
-            {% else %}
-              {% assign list = list | sort: 'path' | reverse %}
-            {% endif %}
-          {% endif %}
-          {% for entry in list %}
-            {% assign expired = false %}
-            {% if entry.expires_on %}{% assign exp = entry.expires_on | date: "%s" %}{% if exp < now %}{% assign expired = true %}{% endif %}{% endif %}
-            {% unless expired %}
-            <li>
-              <a class="card {% if s.collection == 'shortform' %}card-compact{% endif %}" href="{{ site.baseurl }}{{ entry.url }}">
-                <div class="card-media">
-                  {% if entry.images and entry.images.size > 0 %}
-                    <img src="{{ site.baseurl }}{{ entry.images[0].src }}" alt="{{ entry.images[0].alt | default: '' }}">
+    <!-- Tales / longform -->
+    <section class="col">
+      <header class="col-header"><h2>📝 Tales from the Independent</h2></header>
+      <ul class="col-list">
+        {% assign list = tales | sort: 'path' | reverse %}
+        {% for entry in list limit: 20 %}
+          <li>
+            <a class="card" href="{{ entry.url | relative_url }}">
+              {% assign hero = entry.images | first %}
+              <div class="card-media">
+                {% if hero %}
+                  {% assign _src = hero.src %}
+                  {% assign first = _src | slice: 0, 1 %}
+                  {% assign cleaned = _src | replace: './', '' %}
+                  {% if _src contains '://' %}
+                    {% assign resolved = _src %}
+                  {% elsif first == '/' %}
+                    {% assign resolved = _src %}
                   {% else %}
-                    <img src="{{ site.baseurl }}/assets/img/placeholder_card_400x300.png" alt="">
+                    {% assign base = entry.path | replace: entry.name, '' %}
+                    {% assign resolved = '/' | append: base | append: cleaned %}
+                  {% endif %}
+                  <img src="{{ resolved | relative_url }}" alt="{{ hero.alt | default: '' }}">
+                {% else %}
+                  <img src="{{ '/assets/placeholders/placeholder_card_400x300.png' | relative_url }}" alt="">
+                {% endif %}
+              </div>
+              <div class="card-body">
+                <h3 class="card-title">{{ entry.title }}</h3>
+                <p class="card-meta">
+                  <time>{% include date.html doc=entry format="%b %-d, %Y" %}</time>
+                </p>
+                {% if entry.summary %}<p class="card-summary">{{ entry.summary }}</p>{% endif %}
+              </div>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+
+    {% comment %}
+      Shortform sections map by entry.type:
+      event | management | lostfound | safety | style | photo
+    {% endcomment %}
+    {% assign sections = 
+      "Events Notice:event|From the Management:management|Lost & Found:lostfound|Safety Tips for Long Lives:safety|Style & Grace:style|Visions of Independent Living:photo" | split:"|" %}
+
+    {% for s in sections %}
+      {% assign pair = s | split:":" %}
+      {% assign label = pair[0] %}
+      {% assign type = pair[1] %}
+      <section class="col">
+        <header class="col-header"><h2>{{ label }}</h2></header>
+        <ul class="col-list">
+          {% assign list = notes | where: "type", type %}
+          {% if type == 'event' %}
+            {% assign list = list | sort: 'starts_at' %}
+          {% else %}
+            {% assign list = list | sort: 'path' | reverse %}
+          {% endif %}
+
+          {% for entry in list limit: 20 %}
+            <li>
+              <a class="card card-compact" href="{{ entry.url | relative_url }}">
+                {% assign hero = entry.images | first %}
+                <div class="card-media">
+                  {% if hero %}
+                    {% assign _src = hero.src %}
+                    {% assign first = _src | slice: 0, 1 %}
+                    {% assign cleaned = _src | replace: './', '' %}
+                    {% if _src contains '://' %}
+                      {% assign resolved = _src %}
+                    {% elsif first == '/' %}
+                      {% assign resolved = _src %}
+                    {% else %}
+                      {% assign base = entry.path | replace: entry.name, '' %}
+                      {% assign resolved = '/' | append: base | append: cleaned %}
+                    {% endif %}
+                    <img src="{{ resolved | relative_url }}" alt="{{ hero.alt | default: '' }}">
+                  {% else %}
+                    <img src="{{ '/assets/placeholders/placeholder_card_400x300.png' | relative_url }}" alt="">
                   {% endif %}
                 </div>
                 <div class="card-body">
-                  <h4 class="card-title">{{ entry.title }}</h4>
+                  <h3 class="card-title">{{ entry.title }}</h3>
                   <p class="card-meta">
                     <time>
                       {% capture fmt %}{% if entry.section == 'notes' %}%b %-d, %Y • %l:%M %P{% else %}%b %-d, %Y{% endif %}{% endcapture %}
                       {% include date.html doc=entry format=fmt %}
                     </time>
-                    {% if entry.type %} · {{ entry.type }}{% endif %}
+                    {% if entry.location and type == 'event' %} · {{ entry.location }}{% endif %}
                   </p>
-                  {% if s.collection == 'longform' %}
-                    {% if entry.summary %}<p class="card-summary">{{ entry.summary }}</p>{% endif %}
-                  {% endif %}
                 </div>
               </a>
             </li>
-            {% endunless %}
           {% endfor %}
         </ul>
-      </div>
+      </section>
     {% endfor %}
   </div>
-</section>
+</div>
 
-<div class="nav-arrows" aria-hidden="false">
+<!-- Timeline -->
+<div class="timeline-view">
+  {% assign tales = site.pages | where_exp:"p","p.url contains '/tales/'" %}
+  {% assign notes = site.pages | where_exp:"p","p.url contains '/notes/'" %}
+  {% assign all = tales | concat: notes | sort: 'path' | reverse %}
+  <ul class="timeline-list">
+    {% for entry in all limit: 40 %}
+      <li class="tl-item">
+        <a class="card" href="{{ entry.url | relative_url }}">
+          {% assign hero = entry.images | first %}
+          <div class="card-media">
+            {% if hero %}
+              {% assign _src = hero.src %}
+              {% assign first = _src | slice: 0, 1 %}
+              {% assign cleaned = _src | replace: './', '' %}
+              {% if _src contains '://' %}
+                {% assign resolved = _src %}
+              {% elsif first == '/' %}
+                {% assign resolved = _src %}
+              {% else %}
+                {% assign base = entry.path | replace: entry.name, '' %}
+                {% assign resolved = '/' | append: base | append: cleaned %}
+              {% endif %}
+              <img src="{{ resolved | relative_url }}" alt="{{ hero.alt | default: '' }}">
+            {% else %}
+              <img src="{{ '/assets/placeholders/placeholder_card_400x300.png' | relative_url }}" alt="">
+            {% endif %}
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">{{ entry.title }}</h3>
+            <p class="card-meta">
+              <time>
+                {% capture fmt %}{% if entry.section == 'notes' %}%b %-d, %Y • %l:%M %P{% else %}%b %-d, %Y{% endif %}{% endcapture %}
+                {% include date.html doc=entry format=fmt %}
+              </time>
+              {% if entry.type %} · {{ entry.type }}{% endif %}
+            </p>
+            {% if entry.summary %}<p class="card-summary">{{ entry.summary }}</p>{% endif %}
+          </div>
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="nav-arrows">
   <button class="arrow left" aria-label="Previous section">◀</button>
   <button class="arrow right" aria-label="Next section">▶</button>
 </div>
