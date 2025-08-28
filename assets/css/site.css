@@ -202,7 +202,7 @@ html.mode-sections .tabbar .tab[data-mode="sections"]{
 
 .tabbar{
   margin-top: .25rem;   /* tiny breath under the flag */
-  margin-bottom: -6px;  /* pull tabs down onto the line */
+  margin-bottom: -8px;  /* pull tabs down onto the line */
   padding-bottom: 0;
 }
 
