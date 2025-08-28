@@ -4,7 +4,7 @@ date: '2025-08-27'
 author: Dick
 section: notes
 type: photo
-summary: A look at the inspirational posters that brighten our otherwise humdrum elevator.
+summary: A look at the inspirational posters that brighten our otherwise dim elevator.
 images:
 - src: 2025-08-27-dicks-inspiration01.png
   alt: Being a mama isn't easy poster
