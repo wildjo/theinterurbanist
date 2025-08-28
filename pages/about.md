@@ -1,6 +1,11 @@
 ---
 title: About The Interurbanist
-date: 2025-08-21
+permalink: /about/
 ---
 
-A resident-run information clearinghouse for the SHAG Interurban community. Longform stories for context, shortform bulletins for day-to-day living. No pop-ups, no logins, just news you can use.
+**The Interurbanist** is a resident-run information clearinghouse for the SHAG Interurban
+community. We publish longer stories for context and short, practical notices for everyday
+life. No logins, no pop-ups, just useful news and neighbor voices.
+
+We prioritize accessibility: large type, simple navigation, and printable pages. If you
+need help contributing a story, see our **[Submissions](/submissions/)** page.

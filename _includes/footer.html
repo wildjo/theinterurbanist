@@ -1,8 +1,25 @@
-<footer class="site-footer">
-  <details>
-    <summary>About, policies, and masthead</summary>
-    <p>Submissions welcome. Wednesday food bank desk offers dictation help. Be kind, be brief, be useful.</p>
-  </details>
+<footer class="site-footer mini" role="contentinfo" aria-label="Site footer">
+  <hr class="footer-rule" aria-hidden="true">
+
+  <!-- one-line nav, 9px -->
+  <p class="footer-links">
+    <a href="{{ '/about/' | relative_url }}">About</a> ·
+    <a href="{{ '/submissions/' | relative_url }}">Submissions</a> ·
+    <a href="{{ '/masthead/' | relative_url }}">Masthead</a> ·
+    <a href="{{ '/legal/' | relative_url }}">Legal</a>
+  </p>
+
+  <!-- all one paragraph, fully justified, ~7px -->
+  <p class="footer-min">
+    Unless otherwise stated, the website’s templates, CSS and copy written by ChatGPT 5 are published under The Unlicense. Individual works by residents (stories, photos, audio, video) remain the sole property of their creators. By submitting, contributors grant <em>The Interurbanist</em> a non-exclusive license to publish their work on this site and in archived versions of the newsletter. That license does not unlicense their work; any reuse outside this site requires the creator’s permission.
+  </p>
+
+  <!-- third line, 9px -->
+  <p class="footer-fine">
+    © {{ site.time | date: "%Y" }} The Interurbanist. Built with Jekyll. Hosted on GitHub Pages.
+  </p>
+
+  <!-- existing scripts stay here so nothing else breaks -->
+  <script defer src="{{ '/assets/js/lightbox.js?v=2' | relative_url }}"></script>
+  <script defer src="{{ '/assets/js/site.js?v=4' | relative_url }}"></script>
 </footer>
-<script defer src="{{ '/assets/js/lightbox.js?v=2' | relative_url }}"></script>
-<script defer src="{{ '/assets/js/site.js?v=4' | relative_url }}"></script>

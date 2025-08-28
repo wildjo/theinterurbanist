@@ -1,26 +1,35 @@
 ---
 layout: default
 ---
-<article class="entry">
+<article class="entry" itemscope itemtype="https://schema.org/Article">
   <header class="entry-header">
-    <h1 class="entry-title">{{ page.title }}</h1>
+    <h1 class="entry-title" itemprop="headline">{{ page.title }}</h1>
     <div class="meta">
-      <time datetime="{% include date.html doc=page format='%Y-%m-%dT%H:%M:00%z' %}">
+      <time
+        datetime="{% include date.html doc=page format='%Y-%m-%dT%H:%M:00%z' %}"
+        itemprop="datePublished">
         {% capture human %}{% if page.section == 'notes' %}%b %-d, %Y • %l:%M %P{% else %}%b %-d, %Y{% endif %}{% endcapture %}
         {% include date.html doc=page format=human %}
       </time>
-      {% if page.author %} · <span class="author">{{ page.author }}</span>{% endif %}
+      {% if page.author %} · <span class="author" itemprop="author">{{ page.author }}</span>{% endif %}
       {% if page.type %} · <span class="type">{{ page.type }}</span>{% endif %}
+      {% if page.last_modified_at %}
+        <meta itemprop="dateModified" content="{{ page.last_modified_at | date_to_xmlschema }}">
+      {% endif %}
+      {% if page.summary %}
+        <meta itemprop="description" content="{{ page.summary }}">
+      {% endif %}
     </div>
   </header>
 
   {% if page.images and page.images.size > 1 %}
-    <section class="gallery" aria-label="Image gallery">
+    <section class="gallery" aria-label="Image gallery" itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
       <div class="gallery-strip">
         {% for img in page.images %}
           {% assign _src = img.src %}
           {% assign first = _src | slice: 0, 1 %}
           {% assign cleaned = _src | replace: './', '' %}
+
           {% if _src contains '://' %}
             {% assign resolved = _src %}
           {% elsif first == '/' %}
@@ -29,17 +38,23 @@ layout: default
             {% assign base = page.path | replace: page.name, '' %}
             {% assign resolved = '/' | append: base | append: cleaned %}
           {% endif %}
+
           <a href="{{ resolved | relative_url }}" class="lb" data-group="fm">
             <img src="{{ resolved | relative_url }}" alt="{{ img.alt | default: '' }}">
           </a>
+
+          <!-- Schema.org image candidate -->
+          <meta itemprop="url" content="{{ resolved | absolute_url }}">
         {% endfor %}
       </div>
       {% if page.images[0].caption %}<p class="cap">{{ page.images[0].caption }}</p>{% endif %}
     </section>
+
   {% elsif page.images and page.images.size == 1 %}
     {% assign _src = page.images[0].src %}
     {% assign first = _src | slice: 0, 1 %}
     {% assign cleaned = _src | replace: './', '' %}
+
     {% if _src contains '://' %}
       {% assign resolved = _src %}
     {% elsif first == '/' %}
@@ -48,26 +63,29 @@ layout: default
       {% assign base = page.path | replace: page.name, '' %}
       {% assign resolved = '/' | append: base | append: cleaned %}
     {% endif %}
-    <figure class="hero">
+
+    <figure class="hero" itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
       <a href="{{ resolved | relative_url }}" class="lb" data-group="single">
         <img src="{{ resolved | relative_url }}" alt="{{ page.images[0].alt | default: '' }}">
       </a>
       {% if page.images[0].caption %}<figcaption>{{ page.images[0].caption }}</figcaption>{% endif %}
+      <!-- Schema.org image candidate -->
+      <meta itemprop="url" content="{{ resolved | absolute_url }}">
     </figure>
   {% endif %}
 
-  <div class="entry-body">
+  <div class="entry-body" itemprop="articleBody">
     {{ content }}
   </div>
 
-	{% if page.videos and page.videos.size > 0 %}
-	  <section class="videos">
-	    <h2>Videos</h2>
-	    <div class="video-grid">
-	      {% for v in page.videos %}
-	        {% include video_embed.html url=v.url title=v.description %}
-	      {% endfor %}
-	    </div>
-	  </section>
-	{% endif %}
+  {% if page.videos and page.videos.size > 0 %}
+  <section class="videos">
+    <h2>Videos</h2>
+    <div class="video-grid">
+      {% for v in page.videos %}
+        {% include video_embed.html url=v.url title=v.description %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
 </article>

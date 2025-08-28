@@ -14,6 +14,11 @@ defaults:
 exclude:
   - _local
 
+logo: /theinterurbanist/assets/img/the_interurbanist_flag_1411x294.jpg
+
+twitter:
+  card: summary_large_image   # bigger preview cards when possible
+
 plugins:
   - jekyll-seo-tag
   - jekyll-sitemap

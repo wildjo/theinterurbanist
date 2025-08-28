@@ -2,15 +2,55 @@
 <html lang="en">
 <head>
   {% include head.html %}
+
+  {%- comment -%}
+  jekyll-seo-tag: titles, descriptions, canonical, OG, Twitter, JSON-LD
+  https://github.com/jekyll/jekyll-seo-tag
+  {%- endcomment -%}
+  {% seo %}
+
+  {%- comment -%}
+  OG/Twitter image fallback:
+  1) page.image (if explicitly provided)
+  2) first front-matter image in page.images (resolving local/absolute/remote)
+  3) site banner
+  {%- endcomment -%}
+  {% assign ogimg = nil %}
+  {% if page.image %}
+    {% assign ogimg = page.image | absolute_url %}
+  {% elsif page.images and page.images.size > 0 %}
+    {% assign _src = page.images[0].src | to_s %}
+    {% if _src contains '://' %}
+      {% assign ogimg = _src %}
+    {% elsif _src | slice:0,1 == '/' %}
+      {% assign ogimg = _src | absolute_url %}
+    {% else %}
+      {% assign base = page.path | replace: page.name, '' %}
+      {% assign rel = '/' | append: base | append: (_src | replace:'./','') %}
+      {% assign ogimg = rel | absolute_url %}
+    {% endif %}
+  {% else %}
+    {% assign ogimg = '/assets/img/the_interurbanist_flag_1411x294.jpg' | absolute_url %}
+  {% endif %}
+
+  {%- comment -%} If the seo tag didn’t set an image, ensure we provide one. {%- endcomment -%}
+  <meta property="og:image" content="{{ ogimg }}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="{{ ogimg }}">
+  {% if page.layout == 'entry' %}
+    <meta property="og:type" content="article">
+  {% endif %}
 </head>
 <body class="mode-sections">
   <header class="site-header">
-		{% include header.html %}
-		{% include tabs.html %}
+    {% include header.html %}
+    {% include tabs.html %}
   </header>
+
   <main id="content" class="content">
     {{ content }}
   </main>
+
   {% include footer.html %}
 </body>
 </html>

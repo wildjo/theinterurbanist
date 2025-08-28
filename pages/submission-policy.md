@@ -1,12 +1,26 @@
 ---
-title: Submission Policy
-date: 2025-08-21
+title: Submissions
+permalink: /submissions/
 ---
 
-**How to submit:** Bring hand‑written notes to the Wednesday food bank room, or dictate to a volunteer editor. You can also email short updates and photos.
+### How to submit
+- **In person:** bring notes to the Wednesday food-bank room. A volunteer editor can take dictation.
+- **Digital:** send text and photos to the editor; if you don’t use email, bring a USB stick
+  or printed pages and we’ll scan.
 
-**Consent:** Get permission from anyone pictured, especially for close-up faces.
+### What we accept
+- Resident stories, event notices, lost & found, safety tips, photos, poems, and “From the Management” items
+  you’d like boosted to wider circulation.
 
-**Edits:** Submissions may be edited for clarity and safety.
+### Permissions
+- Please get permission from anyone pictured in close-up photos.
+- Keep personal identifiers for other people to a minimum.
 
-**What not to submit:** No personal medical info, no financial account numbers, no harassment, and no commercial spam.
+### Editing
+Submissions may be lightly edited for clarity, safety, and space. We’ll keep your voice intact.
+
+### Licensing (short version)
+- You keep your copyright to your story, photos, and audio/video.
+- You grant **The Interurbanist** a non-exclusive license to publish your work on this site and in archived
+  issues. That license does not unlicense your work. For reuse elsewhere, people must ask you.
+- Full terms: see **[Legal & Licenses](/legal/)**.

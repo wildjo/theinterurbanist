@@ -15,7 +15,7 @@ videos:
 
 
 ---
-Being Independent Doesn’t Mean You Have to Go Alone.
+**Being Independent Doesn’t Mean You Have to Go Alone.**
 
 On the Friday of SeaFair, my friend Arthur (who lives on the island) and I set out for a casual kayak when we ran into some other locals who suggested we check out Blakely Rock, as the tide was still fairly low and we would be able to make landfall.
 
