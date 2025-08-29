@@ -5,9 +5,6 @@
   const qs  = (sel, ctx=document) => ctx.querySelector(sel);
   const qsa = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
 
-  // allow later code to refresh arrow visibility
-  let updateArrows = () => {};
-
   // ----- View switching (Timeline ↔ Sections) -----
   const sectionsView = qs(".sections-view");
   const timelineView = qs(".timeline-view");
@@ -26,8 +23,6 @@
       document.documentElement.classList.add("mode-timeline");
       document.documentElement.classList.remove("mode-sections");
     }
-    // keep nav arrows in sync with current view
-    updateArrows();
   }
 
   // Honor ?view=sections|timeline on load
@@ -74,57 +69,6 @@
     scale = Math.max(minScale, +(scale - step).toFixed(2));
     saveScale();
   }));
-
-  // ----- Horizontal navigation in Sections view (arrows + swipe) -----
-  const scroller = qs(".grid");
-  const leftBtn  = qs(".nav-arrows .left");
-  const rightBtn = qs(".nav-arrows .right");
-
-  if (scroller && leftBtn && rightBtn) {
-    const page = () => Math.max(1, Math.floor(scroller.clientWidth * 0.9));
-
-    updateArrows = () => {
-      const max = scroller.scrollWidth - scroller.clientWidth;
-      const timeline = document.documentElement.classList.contains("mode-timeline");
-      if (max <= 1 || timeline) {
-        leftBtn.style.display = "none";
-        rightBtn.style.display = "none";
-        return;
-      }
-      const atStart = scroller.scrollLeft <= 1;
-      const atEnd   = scroller.scrollLeft >= max - 1;
-      leftBtn.style.display  = atStart ? "none" : "flex";
-      rightBtn.style.display = atEnd   ? "none" : "flex";
-    };
-
-    const clickArrow = dir => {
-      scroller.scrollBy({ left: dir * page(), behavior: "smooth" });
-      updateArrows();
-    };
-
-    leftBtn.addEventListener("click",  () => clickArrow(-1));
-    rightBtn.addEventListener("click", () => clickArrow(1));
-    scroller.addEventListener("scroll", updateArrows, { passive: true });
-    window.addEventListener("resize", updateArrows);
-    updateArrows();
-
-    // basic swipe (don’t fight vertical scrolling)
-    let startX = null, startY = null;
-    scroller.addEventListener("touchstart", e => {
-      if (e.touches.length !== 1) return;
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-    }, { passive: true });
-
-    scroller.addEventListener("touchend", e => {
-      if (startX == null || startY == null) return;
-      const dx = e.changedTouches[0].clientX - startX;
-      const dy = Math.abs(e.changedTouches[0].clientY - startY);
-      startX = startY = null;
-      if (dy > 40 || Math.abs(dx) < 50) return; // vertical intent or tiny swipe
-      scroller.scrollBy({ left: dx > 0 ? -page() : page(), behavior: "smooth" });
-    });
-  }
 
   // ----- Lightbox safe init (if present) -----
   if (typeof window.Lightbox === "object" && typeof window.Lightbox.init === "function") {
