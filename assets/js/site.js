@@ -5,6 +5,9 @@
   const qs  = (sel, ctx=document) => ctx.querySelector(sel);
   const qsa = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
 
+  // allow later code to refresh arrow visibility
+  let updateArrows = () => {};
+
   // ----- View switching (Timeline ↔ Sections) -----
   const sectionsView = qs(".sections-view");
   const timelineView = qs(".timeline-view");
@@ -23,6 +26,8 @@
       document.documentElement.classList.add("mode-timeline");
       document.documentElement.classList.remove("mode-sections");
     }
+    // keep nav arrows in sync with current view
+    updateArrows();
   }
 
   // Honor ?view=sections|timeline on load
@@ -78,19 +83,27 @@
   if (scroller && leftBtn && rightBtn) {
     const page = () => Math.max(1, Math.floor(scroller.clientWidth * 0.9));
 
-    const updateArrows = () => {
+    updateArrows = () => {
       const max = scroller.scrollWidth - scroller.clientWidth;
-      if (max <= 4) {
+      const timeline = document.documentElement.classList.contains("mode-timeline");
+      if (max <= 1 || timeline) {
         leftBtn.style.display = "none";
         rightBtn.style.display = "none";
         return;
       }
-      leftBtn.style.display  = scroller.scrollLeft > 4 ? "flex" : "none";
-      rightBtn.style.display = scroller.scrollLeft < max - 4 ? "flex" : "none";
+      const atStart = scroller.scrollLeft <= 1;
+      const atEnd   = scroller.scrollLeft >= max - 1;
+      leftBtn.style.display  = atStart ? "none" : "flex";
+      rightBtn.style.display = atEnd   ? "none" : "flex";
     };
 
-    leftBtn.addEventListener("click",  () => scroller.scrollBy({ left: -page(), behavior: "smooth" }));
-    rightBtn.addEventListener("click", () => scroller.scrollBy({ left:  page(), behavior: "smooth" }));
+    const clickArrow = dir => {
+      scroller.scrollBy({ left: dir * page(), behavior: "smooth" });
+      updateArrows();
+    };
+
+    leftBtn.addEventListener("click",  () => clickArrow(-1));
+    rightBtn.addEventListener("click", () => clickArrow(1));
     scroller.addEventListener("scroll", updateArrows, { passive: true });
     window.addEventListener("resize", updateArrows);
     updateArrows();
