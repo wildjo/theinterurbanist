@@ -1,7 +1,7 @@
 title: "The Interurbanist: What's Happening at the SHAG Interurban"
 description: "SHAG Interurban's Information Clearinghouse"
 url: "https://www.theinterurbanist.org/"
-baseurl: "/theinterurbanist"
+baseurl: "/"
 timezone: "America/Los_Angeles"
 
 # Using page bundles: each story is a folder with index.md plus its media.
