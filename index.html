@@ -6,7 +6,7 @@ title: Home
   {% assign tales = site.pages | where_exp:"p","p.url contains '/tales/'" %}
 
   <div class="grid">
-    <!-- Tales / longform (preserved exactly as before) -->
+    <!-- Tales / longform (preserved) -->
     <section class="col">
       <header class="col-header"><h2>📝 Tales from the Independent</h2></header>
       <ul class="col-list">
@@ -47,7 +47,7 @@ title: Home
     </section>
 
     {% comment %}
-      New shortform sections by folder (no more /notes/).
+      Shortform sections by folder.
       Labels:
         events:     Events Notice
         management: From the Management
@@ -81,7 +81,6 @@ title: Home
       <section class="col">
         <header class="col-header"><h2>{{ label }}</h2></header>
         <ul class="col-list">
-          {% comment %}If events have starts_at, sort ascending, else by path desc{% endcomment %}
           {% if slug == 'events' %}
             {% assign list = collection | sort: 'starts_at' %}
           {% else %}
@@ -129,8 +128,9 @@ title: Home
   </div>
 </div>
 
-<!-- Timeline -->
+<!-- Timeline (newest → oldest) without Liquid object sort -->
 <div class="timeline-view">
+  {% assign tales      = site.pages | where_exp:"p","p.url contains '/tales/'" %}
   {% assign events     = site.pages | where_exp:"p","p.url contains '/events/'" %}
   {% assign management = site.pages | where_exp:"p","p.url contains '/management/'" %}
   {% assign lostnfound = site.pages | where_exp:"p","p.url contains '/lostnfound/'" %}
@@ -138,9 +138,13 @@ title: Home
   {% assign style      = site.pages | where_exp:"p","p.url contains '/style/'" %}
   {% assign visions    = site.pages | where_exp:"p","p.url contains '/visions/'" %}
 
-  {% assign all = tales | concat: events | concat: management | concat: lostnfound | concat: safety | concat: style | concat: visions | sort: 'path' | reverse %}
-  <ul class="timeline-list">
-    {% for entry in all limit: 40 %}
+  {% assign all = tales | concat: events | concat: management | concat: lostnfound | concat: safety | concat: style | concat: visions %}
+
+  {% capture _rows %}
+  {% for entry in all %}
+    {% if entry.date %}
+      {% assign ts = entry.date | date: '%s' %}
+      {% capture li %}
       <li class="tl-item">
         <a class="card" href="{{ entry.url | relative_url }}">
           {% assign hero = entry.images | first %}
@@ -165,16 +169,58 @@ title: Home
           <div class="card-body">
             <h3 class="card-title">{{ entry.title }}</h3>
             <p class="card-meta">
-              <time>
-                {% capture fmt %}{% if entry.section == 'events' and entry.starts_at %}%b %-d, %Y • %l:%M %P{% else %}%b %-d, %Y{% endif %}{% endcapture %}
-                {% include date.html doc=entry format=fmt %}
-              </time>
+              <time>{% include date.html doc=entry format="%b %-d, %Y" %}</time>
               {% if entry.section %} · {{ entry.section }}{% endif %}
             </p>
             {% if entry.summary %}<p class="card-summary">{{ entry.summary }}</p>{% endif %}
           </div>
         </a>
       </li>
+      {% endcapture %}
+      {{ ts }}|||{{ entry.url }}|||{{ li | strip_newlines }}{{ '
+' }}
+    {% endif %}
+  {% endfor %}
+  {% endcapture %}
+
+  {% assign lines  = _rows | split: '
+' | compact %}
+  {% assign sorted = lines | sort | reverse %}
+
+  <script>
+    (function(){
+      try {
+        var rows = {{ sorted | jsonify }};
+        var out = rows.map(function(s){
+          var p = s.split("|||");
+          return { ts: Number(p[0]), url: p[1] };
+        });
+        console.groupCollapsed("Timeline (newest → oldest), using entry.date");
+        console.table(out);
+        console.groupEnd();
+        window.__timelineDebug = out;
+      } catch(e) { console.warn("Timeline debug failed:", e); }
+    })();
+  </script>
+
+  <ul class="timeline-list">
+    {% for row in sorted limit:60 %}
+      {% assign parts = row | split:'|||' %}
+      {{ parts[2] }}
     {% endfor %}
   </ul>
+
+  {% comment %} Friendly errors for pages missing date {% endcomment %}
+  {% assign invalid = all | where_exp:"p","p.date == nil" %}
+  {% if invalid and invalid.size > 0 %}
+    <div class="timeline-errors">
+      <h3>Missing dates</h3>
+      <p>Add <code>date: YYYY-MM-DD</code> to the front-matter of these pages:</p>
+      <ul>
+        {% for e in invalid %}
+          <li><a href="{{ e.url | relative_url }}">{{ e.title | default: e.url }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
 </div>
