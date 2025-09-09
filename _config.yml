@@ -1,7 +1,7 @@
 title: "The Interurbanist: What's Happening at the SHAG Interurban"
 description: "SHAG Interurban's Information Clearinghouse"
-url: "https://wildjo.github.io"
-baseurl: "/theinterurbanist"
+url: "https://www.theinterurbanist.org"
+baseurl: ""
 timezone: "America/Los_Angeles"
 
 # Using page bundles: each story is a folder with index.md plus its media.
@@ -24,7 +24,7 @@ defaults:
 exclude:
   - _local
 
-logo: /theinterurbanist/assets/img/the_interurbanist_flag_1411x294.jpg
+logo: /assets/img/the_interurbanist_flag_1411x294.jpg
 
 twitter:
   card: summary_large_image   # bigger preview cards when possible
@@ -32,5 +32,6 @@ twitter:
 plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
+  - jekyll-feed
 
 permalink: pretty
