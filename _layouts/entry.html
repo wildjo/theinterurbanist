@@ -8,7 +8,7 @@ layout: default
       <time
         datetime="{% include date.html doc=page format='%Y-%m-%dT%H:%M:00%z' %}"
         itemprop="datePublished">
-        {% capture human %}{% if page.section == 'notes' %}%b %-d, %Y • %l:%M %P{% else %}%b %-d, %Y{% endif %}{% endcapture %}
+        {% capture human %}{% if page.section == 'visions' %}%b %-d, %Y • %l:%M %P{% else %}%b %-d, %Y{% endif %}{% endcapture %}
         {% include date.html doc=page format=human %}
       </time>
       {% if page.author %} · <span class="author" itemprop="author">{{ page.author }}</span>{% endif %}

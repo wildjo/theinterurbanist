@@ -4,10 +4,9 @@ title: Home
 ---
 <div class="sections-view">
   {% assign tales = site.pages | where_exp:"p","p.url contains '/tales/'" %}
-  {% assign notes = site.pages | where_exp:"p","p.url contains '/notes/'" %}
 
   <div class="grid">
-    <!-- Tales / longform -->
+    <!-- Tales / longform (preserved exactly as before) -->
     <section class="col">
       <header class="col-header"><h2>📝 Tales from the Independent</h2></header>
       <ul class="col-list">
@@ -48,24 +47,45 @@ title: Home
     </section>
 
     {% comment %}
-      Shortform sections map by entry.type:
-      event | management | lostfound | safety | style | photo
+      New shortform sections by folder (no more /notes/).
+      Labels:
+        events:     Events Notice
+        management: From the Management
+        lostnfound: Lost & Found
+        safety:     Safety Tips for Long Lives
+        style:      Style & Grace
+        visions:    Visions of Independent Living
     {% endcomment %}
-    {% assign sections = 
-      "Events Notice:event|From the Management:management|Lost & Found:lostfound|Safety Tips for Long Lives:safety|Style & Grace:style|Visions of Independent Living:photo" | split:"|" %}
 
-    {% for s in sections %}
-      {% assign pair = s | split:":" %}
+    {% assign section_defs = "Events Notice:events|From the Management:management|Lost & Found:lostnfound|Safety Tips for Long Lives:safety|Style & Grace:style|Visions of Independent Living:visions" | split:"|" %}
+
+    {% for s in section_defs %}
+      {% assign pair = s | split: ":" %}
       {% assign label = pair[0] %}
-      {% assign type = pair[1] %}
+      {% assign slug  = pair[1] %}
+
+      {% if slug == 'events' %}
+        {% assign collection = site.pages | where_exp:"p","p.url contains '/events/'" %}
+      {% elsif slug == 'management' %}
+        {% assign collection = site.pages | where_exp:"p","p.url contains '/management/'" %}
+      {% elsif slug == 'lostnfound' %}
+        {% assign collection = site.pages | where_exp:"p","p.url contains '/lostnfound/'" %}
+      {% elsif slug == 'safety' %}
+        {% assign collection = site.pages | where_exp:"p","p.url contains '/safety/'" %}
+      {% elsif slug == 'style' %}
+        {% assign collection = site.pages | where_exp:"p","p.url contains '/style/'" %}
+      {% elsif slug == 'visions' %}
+        {% assign collection = site.pages | where_exp:"p","p.url contains '/visions/'" %}
+      {% endif %}
+
       <section class="col">
         <header class="col-header"><h2>{{ label }}</h2></header>
         <ul class="col-list">
-          {% assign list = notes | where: "type", type %}
-          {% if type == 'event' %}
-            {% assign list = list | sort: 'starts_at' %}
+          {% comment %}If events have starts_at, sort ascending, else by path desc{% endcomment %}
+          {% if slug == 'events' %}
+            {% assign list = collection | sort: 'starts_at' %}
           {% else %}
-            {% assign list = list | sort: 'path' | reverse %}
+            {% assign list = collection | sort: 'path' | reverse %}
           {% endif %}
 
           {% for entry in list limit: 20 %}
@@ -94,10 +114,10 @@ title: Home
                   <h3 class="card-title">{{ entry.title }}</h3>
                   <p class="card-meta">
                     <time>
-                      {% capture fmt %}{% if entry.section == 'notes' %}%b %-d, %Y • %l:%M %P{% else %}%b %-d, %Y{% endif %}{% endcapture %}
+                      {% capture fmt %}{% if entry.section == 'events' and entry.starts_at %}%b %-d, %Y • %l:%M %P{% else %}%b %-d, %Y{% endif %}{% endcapture %}
                       {% include date.html doc=entry format=fmt %}
                     </time>
-                    {% if entry.location and type == 'event' %} · {{ entry.location }}{% endif %}
+                    {% if entry.location and slug == 'events' %} · {{ entry.location }}{% endif %}
                   </p>
                 </div>
               </a>
@@ -111,9 +131,14 @@ title: Home
 
 <!-- Timeline -->
 <div class="timeline-view">
-  {% assign tales = site.pages | where_exp:"p","p.url contains '/tales/'" %}
-  {% assign notes = site.pages | where_exp:"p","p.url contains '/notes/'" %}
-  {% assign all = tales | concat: notes | sort: 'path' | reverse %}
+  {% assign events     = site.pages | where_exp:"p","p.url contains '/events/'" %}
+  {% assign management = site.pages | where_exp:"p","p.url contains '/management/'" %}
+  {% assign lostnfound = site.pages | where_exp:"p","p.url contains '/lostnfound/'" %}
+  {% assign safety     = site.pages | where_exp:"p","p.url contains '/safety/'" %}
+  {% assign style      = site.pages | where_exp:"p","p.url contains '/style/'" %}
+  {% assign visions    = site.pages | where_exp:"p","p.url contains '/visions/'" %}
+
+  {% assign all = tales | concat: events | concat: management | concat: lostnfound | concat: safety | concat: style | concat: visions | sort: 'path' | reverse %}
   <ul class="timeline-list">
     {% for entry in all limit: 40 %}
       <li class="tl-item">
@@ -141,10 +166,10 @@ title: Home
             <h3 class="card-title">{{ entry.title }}</h3>
             <p class="card-meta">
               <time>
-                {% capture fmt %}{% if entry.section == 'notes' %}%b %-d, %Y • %l:%M %P{% else %}%b %-d, %Y{% endif %}{% endcapture %}
+                {% capture fmt %}{% if entry.section == 'events' and entry.starts_at %}%b %-d, %Y • %l:%M %P{% else %}%b %-d, %Y{% endif %}{% endcapture %}
                 {% include date.html doc=entry format=fmt %}
               </time>
-              {% if entry.type %} · {{ entry.type }}{% endif %}
+              {% if entry.section %} · {{ entry.section }}{% endif %}
             </p>
             {% if entry.summary %}<p class="card-summary">{{ entry.summary }}</p>{% endif %}
           </div>

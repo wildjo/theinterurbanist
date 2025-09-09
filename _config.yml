@@ -8,8 +8,18 @@ timezone: "America/Los_Angeles"
 defaults:
   - scope: { path: "tales" }
     values: { layout: entry, section: tales }
-  - scope: { path: "notes" }
-    values: { layout: entry, section: notes }
+  - scope: { path: "events" }
+    values: { layout: entry, section: events }
+  - scope: { path: "management" }
+    values: { layout: entry, section: management }
+  - scope: { path: "lostnfound" }
+    values: { layout: entry, section: lostnfound }
+  - scope: { path: "safety" }
+    values: { layout: entry, section: safety }
+  - scope: { path: "style" }
+    values: { layout: entry, section: style }
+  - scope: { path: "visions" }
+    values: { layout: entry, section: visions }
 
 exclude:
   - _local

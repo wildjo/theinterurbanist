@@ -3,35 +3,33 @@
 <head>
   {% include head.html %}
 
-  {%- comment -%}
-  jekyll-seo-tag: titles, descriptions, canonical, OG, Twitter, JSON-LD
-  https://github.com/jekyll/jekyll-seo-tag
-  {%- endcomment -%}
-  {% seo %}
+{%- comment -%} Resolve an image for OG/Twitter without using filters in comparisons {%- endcomment -%}
+{%- assign base = site.baseurl | default: '' -%}
 
-  {%- comment -%}
-  OG/Twitter image fallback:
-  1) page.image (if explicitly provided)
-  2) first front-matter image in page.images (resolving local/absolute/remote)
-  3) site banner
-  {%- endcomment -%}
-  {% assign ogimg = nil %}
-  {% if page.image %}
-    {% assign ogimg = page.image | absolute_url %}
-  {% elsif page.images and page.images.size > 0 %}
-    {% assign _src = page.images[0].src | to_s %}
-    {% if _src contains '://' %}
-      {% assign ogimg = _src %}
-    {% elsif _src | slice:0,1 == '/' %}
-      {% assign ogimg = _src | absolute_url %}
-    {% else %}
-      {% assign base = page.path | replace: page.name, '' %}
-      {% assign rel = '/' | append: base | append: (_src | replace:'./','') %}
-      {% assign ogimg = rel | absolute_url %}
-    {% endif %}
-  {% else %}
-    {% assign ogimg = '/assets/img/the_interurbanist_flag_1411x294.jpg' | absolute_url %}
-  {% endif %}
+{%- assign _src = '' -%}
+{%- if page.images and page.images.size > 0 and page.images[0].src -%}
+  {%- assign _src = page.images[0].src | to_s -%}
+{%- elsif site.logo -%}
+  {%- assign _src = site.logo | to_s -%}
+{%- endif -%}
+
+{%- assign og_image = '' -%}
+{%- if _src != '' -%}
+  {%- assign first_char = _src | slice: 0, 1 -%}
+  {%- if first_char == '/' -%}
+    {%- assign og_image = _src -%}
+  {%- else -%}
+    {%- assign cleaned = _src | replace: './', '' -%}
+    {%- assign og_image = '/' | append: base | append: '/' | append: cleaned -%}
+    {%- assign og_image = og_image | replace: '//', '/' -%}
+  {%- endif -%}
+{%- endif -%}
+
+{%- if og_image != '' -%}
+  <meta property="og:image" content="{{ og_image | absolute_url }}">
+  <meta name="twitter:image" content="{{ og_image | absolute_url }}">
+{%- endif -%}
+
 
   {%- comment -%} If the seo tag didn’t set an image, ensure we provide one. {%- endcomment -%}
   <meta property="og:image" content="{{ ogimg }}">

@@ -2,7 +2,7 @@
 title: "Resident Images: Dick\u2019s Inspirational Elevator Posters Give Us All a Lift and Keep Us Down to Earth"
 date: '2025-08-27'
 author: Dick
-section: notes
+section: visions
 type: photo
 summary: A look at the inspirational posters that brighten our otherwise dim elevator.
 images:

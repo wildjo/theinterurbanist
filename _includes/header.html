@@ -6,8 +6,8 @@
 	<div>
     <h1 class="site-title">The Interurbanist</h1>
     {% assign tales = site.pages | where_exp:"p","p.dir contains '/tales/'"  %}
-    {% assign notes = site.pages | where_exp:"p","p.dir contains '/notes/'"  %}
-    {% assign all = tales | concat: notes | sort: 'path' | reverse %}
+    {% assign visions = site.pages | where_exp:"p","p.dir contains '/visions/'"  %}
+    {% assign all = tales | concat: visions | sort: 'path' | reverse %}
     {% assign latest = all | first %}
     <p class="site-desc">
       SHAG Interurban's Information Clearinghouse |
