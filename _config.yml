@@ -4,6 +4,7 @@ url: "https://www.theinterurbanist.org"
 baseurl: ""
 timezone: "America/Los_Angeles"
 
+
 # Using page bundles: each story is a folder with index.md plus its media.
 defaults:
   - scope: { path: "tales" }
@@ -20,6 +21,16 @@ defaults:
     values: { layout: entry, section: style }
   - scope: { path: "visions" }
     values: { layout: entry, section: visions }
+
+# Canonical section definitions (single source of truth)
+sections:
+  - { slug: tales,       label: "Tales from the Independent" }
+  - { slug: events,      label: "Events Notice" }
+  - { slug: management,  label: "From the Management" }
+  - { slug: lostnfound,  label: "Lost & Found" }
+  - { slug: safety,      label: "Safety Tips for Long Lives" }
+  - { slug: style,       label: "Style & Grace" }
+  - { slug: visions,     label: "Visions of Independent Living" }
 
 exclude:
   - _local

@@ -2,6 +2,7 @@
 layout: default
 title: Home
 ---
+
 <div class="sections-view">
   {% assign tales = site.pages | where_exp:"p","p.url contains '/tales/'" %}
 
@@ -46,47 +47,26 @@ title: Home
       </ul>
     </section>
 
-    {% comment %}
-      Shortform sections by folder.
-      Labels:
-        events:     Events Notice
-        management: From the Management
-        lostnfound: Lost & Found
-        safety:     Safety Tips for Long Lives
-        style:      Style & Grace
-        visions:    Visions of Independent Living
-    {% endcomment %}
+    {%- comment -%}
+      Shortform sections are driven from _config.yml → site.sections
+      We exclude 'tales' here since it’s rendered above.
+    {%- endcomment -%}
+    {% assign short_sections = site.sections | where_exp: "s", "s.slug != 'tales'" %}
 
-    {% assign section_defs = "Events Notice:events|From the Management:management|Lost & Found:lostnfound|Safety Tips for Long Lives:safety|Style & Grace:style|Visions of Independent Living:visions" | split:"|" %}
+    {% for s in short_sections %}
+      {% assign label = s.label %}
+      {% assign slug  = s.slug %}
 
-    {% for s in section_defs %}
-      {% assign pair = s | split: ":" %}
-      {% assign label = pair[0] %}
-      {% assign slug  = pair[1] %}
-
+      {% assign collection = site.pages | where: "section", slug %}
       {% if slug == 'events' %}
-        {% assign collection = site.pages | where_exp:"p","p.url contains '/events/'" %}
-      {% elsif slug == 'management' %}
-        {% assign collection = site.pages | where_exp:"p","p.url contains '/management/'" %}
-      {% elsif slug == 'lostnfound' %}
-        {% assign collection = site.pages | where_exp:"p","p.url contains '/lostnfound/'" %}
-      {% elsif slug == 'safety' %}
-        {% assign collection = site.pages | where_exp:"p","p.url contains '/safety/'" %}
-      {% elsif slug == 'style' %}
-        {% assign collection = site.pages | where_exp:"p","p.url contains '/style/'" %}
-      {% elsif slug == 'visions' %}
-        {% assign collection = site.pages | where_exp:"p","p.url contains '/visions/'" %}
+        {% assign list = collection | sort: 'starts_at' %}
+      {% else %}
+        {% assign list = collection | sort: 'path' | reverse %}
       {% endif %}
 
       <section class="col">
         <header class="col-header"><h2>{{ label }}</h2></header>
         <ul class="col-list">
-          {% if slug == 'events' %}
-            {% assign list = collection | sort: 'starts_at' %}
-          {% else %}
-            {% assign list = collection | sort: 'path' | reverse %}
-          {% endif %}
-
           {% for entry in list limit: 20 %}
             <li>
               <a class="card card-compact" href="{{ entry.url | relative_url }}">
@@ -113,7 +93,13 @@ title: Home
                   <h3 class="card-title">{{ entry.title }}</h3>
                   <p class="card-meta">
                     <time>
-                      {% capture fmt %}{% if entry.section == 'events' and entry.starts_at %}%b %-d, %Y • %l:%M %P{% else %}%b %-d, %Y{% endif %}{% endcapture %}
+                      {% capture fmt %}
+                        {% if slug == 'events' and entry.starts_at %}
+                          %b %-d, %Y • %l:%M %P
+                        {% else %}
+                          %b %-d, %Y
+                        {% endif %}
+                      {% endcapture %}
                       {% include date.html doc=entry format=fmt %}
                     </time>
                     {% if entry.location and slug == 'events' %} · {{ entry.location }}{% endif %}
@@ -130,20 +116,28 @@ title: Home
 
 <!-- Timeline (newest → oldest) without Liquid object sort -->
 <div class="timeline-view">
-  {% assign tales      = site.pages | where_exp:"p","p.url contains '/tales/'" %}
-  {% assign events     = site.pages | where_exp:"p","p.url contains '/events/'" %}
-  {% assign management = site.pages | where_exp:"p","p.url contains '/management/'" %}
-  {% assign lostnfound = site.pages | where_exp:"p","p.url contains '/lostnfound/'" %}
-  {% assign safety     = site.pages | where_exp:"p","p.url contains '/safety/'" %}
-  {% assign style      = site.pages | where_exp:"p","p.url contains '/style/'" %}
-  {% assign visions    = site.pages | where_exp:"p","p.url contains '/visions/'" %}
-
-  {% assign all = tales | concat: events | concat: management | concat: lostnfound | concat: safety | concat: style | concat: visions %}
+  {% assign entries = site.pages | where:"layout","entry" %}
 
   {% capture _rows %}
-  {% for entry in all %}
+  {% for entry in entries %}
     {% if entry.date %}
       {% assign ts = entry.date | date: '%s' %}
+
+      {% assign sec_slug = entry.section | to_s | strip | downcase %}
+      {% assign sec_obj  = site.sections | where:"slug", sec_slug | first %}
+      {% if sec_obj == blank %}
+        {% assign sec_obj = site.sections[sec_slug] %}
+      {% endif %}
+      {% if sec_obj %}
+        {% if sec_obj.label %}
+          {% assign sec_label = sec_obj.label %}
+        {% else %}
+          {% assign sec_label = sec_obj %}
+        {% endif %}
+      {% else %}
+        {% assign sec_label = sec_slug | replace:'-',' ' %}
+      {% endif %}
+
       {% capture li %}
       <li class="tl-item">
         <a class="card" href="{{ entry.url | relative_url }}">
@@ -167,10 +161,13 @@ title: Home
             {% endif %}
           </div>
           <div class="card-body">
+            {% if sec_slug != '' %}
+              <h6 class="card-section">{{ sec_label | upcase }}</h6>
+            {% endif %}
             <h3 class="card-title">{{ entry.title }}</h3>
             <p class="card-meta">
               <time>{% include date.html doc=entry format="%b %-d, %Y" %}</time>
-              {% if entry.section %} · {{ entry.section }}{% endif %}
+              {% if sec_slug != '' %} · {{ sec_label }}{% endif %}
             </p>
             {% if entry.summary %}<p class="card-summary">{{ entry.summary }}</p>{% endif %}
           </div>
@@ -210,8 +207,7 @@ title: Home
     {% endfor %}
   </ul>
 
-  {% comment %} Friendly errors for pages missing date {% endcomment %}
-  {% assign invalid = all | where_exp:"p","p.date == nil" %}
+  {% assign invalid = entries | where_exp:"p","p.date == nil" %}
   {% if invalid and invalid.size > 0 %}
     <div class="timeline-errors">
       <h3>Missing dates</h3>
