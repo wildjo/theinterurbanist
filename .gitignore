@@ -35,8 +35,6 @@ node_modules/
 .env.*
 
 # Local preview helpers (keep on your machine only)
-Gemfile
-Gemfile.lock
 serve.command
 .bundle/
 vendor/
