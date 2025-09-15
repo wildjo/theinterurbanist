@@ -10,7 +10,7 @@
     {% assign all = tales | concat: visions | sort: 'path' | reverse %}
     {% assign latest = all | first %}
     <p class="site-desc">
-      SHAG Interurban's Information Clearinghouse |
+      SHAG Interurban's Arts, Style, and Entertainment publication |
       Most recent post:
       {% if latest %}{% include date.html doc=latest format="%b %-d" %}{% else %}n/a{% endif %}.
     </p>

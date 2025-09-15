@@ -3,7 +3,7 @@ title: About The Interurbanist
 permalink: /about/
 ---
 
-**The Interurbanist** is a resident-run information clearinghouse for the SHAG Interurban
+**The Interurbanist** is a resident-run Arts, Style, and Entertainment publication for the SHAG Interurban
 community. We publish longer stories for context and short, practical notices for everyday
 life. No logins, no pop-ups, just useful news and neighbor voices.
 
