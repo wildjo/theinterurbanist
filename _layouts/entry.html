@@ -1,6 +1,17 @@
 ---
 layout: default
 ---
+{%- assign default_entry_format = site.date_formats.entry_default | default: "%b %-d, %Y" -%}
+{%- assign page_section_slug = page.section | to_s | strip | downcase -%}
+{%- assign page_section = site.sections | where:"slug", page_section_slug | first -%}
+{%- if page_section == blank -%}
+  {%- assign page_section = site.sections[page_section_slug] -%}
+{%- endif -%}
+{%- assign page_entry_settings = nil -%}
+{%- if page_section and page_section.entry -%}
+  {%- assign page_entry_settings = page_section.entry -%}
+{%- endif -%}
+{%- capture page_entry_format -%}{% include resolve_date_format.html settings=page_entry_settings doc=page default=default_entry_format %}{%- endcapture -%}
 <article class="entry" itemscope itemtype="https://schema.org/Article">
   <header class="entry-header">
     <h1 class="entry-title" itemprop="headline">{{ page.title }}</h1>
@@ -8,8 +19,7 @@ layout: default
       <time
         datetime="{% include date.html doc=page format='%Y-%m-%dT%H:%M:00%z' %}"
         itemprop="datePublished">
-        {% capture human %}{% if page.section == 'visions' %}%b %-d, %Y • %l:%M %P{% else %}%b %-d, %Y{% endif %}{% endcapture %}
-        {% include date.html doc=page format=human %}
+        {% include date.html doc=page format=page_entry_format %}
       </time>
       {% if page.author %} · <span class="author" itemprop="author">{{ page.author }}</span>{% endif %}
       {% if page.type %} · <span class="type">{{ page.type }}</span>{% endif %}
@@ -26,18 +36,11 @@ layout: default
     <section class="gallery" aria-label="Image gallery" itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
       <div class="gallery-strip">
         {% for img in page.images %}
-          {% assign _src = img.src %}
-          {% assign first = _src | slice: 0, 1 %}
-          {% assign cleaned = _src | replace: './', '' %}
-
-          {% if _src contains '://' %}
-            {% assign resolved = _src %}
-          {% elsif first == '/' %}
-            {% assign resolved = _src %}
-          {% else %}
-            {% assign base = page.path | replace: page.name, '' %}
-            {% assign resolved = '/' | append: base | append: cleaned %}
-          {% endif %}
+          {%- capture resolved -%}{% include media_url.html src=img.src item=page %}{%- endcapture -%}
+          {%- assign resolved = resolved | strip -%}
+          {%- if resolved == '' -%}
+            {%- assign resolved = img.src | to_s | strip -%}
+          {%- endif -%}
 
           <a href="{{ resolved | relative_url }}" class="lb" data-group="fm">
             <img src="{{ resolved | relative_url }}" alt="{{ img.alt | default: '' }}">
@@ -51,18 +54,11 @@ layout: default
     </section>
 
   {% elsif page.images and page.images.size == 1 %}
-    {% assign _src = page.images[0].src %}
-    {% assign first = _src | slice: 0, 1 %}
-    {% assign cleaned = _src | replace: './', '' %}
-
-    {% if _src contains '://' %}
-      {% assign resolved = _src %}
-    {% elsif first == '/' %}
-      {% assign resolved = _src %}
-    {% else %}
-      {% assign base = page.path | replace: page.name, '' %}
-      {% assign resolved = '/' | append: base | append: cleaned %}
-    {% endif %}
+    {%- capture resolved -%}{% include media_url.html src=page.images[0].src item=page %}{%- endcapture -%}
+    {%- assign resolved = resolved | strip -%}
+    {%- if resolved == '' -%}
+      {%- assign resolved = page.images[0].src | to_s | strip -%}
+    {%- endif -%}
 
     <figure class="hero" itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
       <a href="{{ resolved | relative_url }}" class="lb" data-group="single">

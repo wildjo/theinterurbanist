@@ -1,0 +1,24 @@
+{%- assign raw = include.src | to_s | strip -%}
+{%- assign resolved = '' -%}
+{%- if raw != '' -%}
+  {%- if raw contains '://' -%}
+    {%- assign resolved = raw -%}
+  {%- else -%}
+    {%- assign first = raw | slice: 0, 1 -%}
+    {%- assign cleaned = raw | replace: './', '' -%}
+    {%- if first == '/' -%}
+      {%- assign resolved = raw -%}
+    {%- else -%}
+      {%- assign base_path = include.base | default: '' -%}
+      {%- if base_path == '' and include.item -%}
+        {%- assign item = include.item -%}
+        {%- if item.path and item.name -%}
+          {%- assign base_path = item.path | replace: item.name, '' -%}
+        {%- endif -%}
+      {%- endif -%}
+      {%- assign prefix = include.prefix | default: '/' -%}
+      {%- assign resolved = prefix | append: base_path | append: cleaned -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endif -%}
+{{ resolved | strip }}
