@@ -1,0 +1,16 @@
+{%- assign wrapper_class = include.wrapper_class | default: 'card-media' -%}
+{%- assign placeholder = include.placeholder | default: site.placeholders.card | default: '/assets/placeholders/placeholder_card_400x300.png' -%}
+{%- assign image = include.image -%}
+<div class="{{ wrapper_class }}">
+  {%- if image -%}
+    {%- capture resolved -%}{% include media_url.html src=image.src item=include.item base=include.base prefix=include.prefix %}{%- endcapture -%}
+    {%- assign resolved = resolved | strip -%}
+    {%- if resolved != '' -%}
+      <img src="{{ resolved | relative_url }}" alt="{{ image.alt | default: include.alt | default: '' }}">
+    {%- else -%}
+      <img src="{{ placeholder | relative_url }}" alt="">
+    {%- endif -%}
+  {%- else -%}
+    <img src="{{ placeholder | relative_url }}" alt="">
+  {%- endif -%}
+</div>

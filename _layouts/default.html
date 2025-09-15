@@ -6,20 +6,21 @@
 {%- comment -%} Resolve an image for OG/Twitter without using filters in comparisons {%- endcomment -%}
 {%- assign base = site.baseurl | default: '' -%}
 
-{%- assign _src = '' -%}
+{%- assign og_source = '' -%}
 {%- if page.images and page.images.size > 0 and page.images[0].src -%}
-  {%- assign _src = page.images[0].src | to_s -%}
-{%- elsif site.logo -%}
-  {%- assign _src = site.logo | to_s -%}
+  {%- capture og_candidate -%}{% include media_url.html src=page.images[0].src item=page %}{%- endcapture -%}
+  {%- assign og_source = og_candidate | strip -%}
+{%- endif -%}
+{%- if og_source == '' and site.logo -%}
+  {%- assign og_source = site.logo | to_s | strip -%}
 {%- endif -%}
 
 {%- assign og_image = '' -%}
-{%- if _src != '' -%}
-  {%- assign first_char = _src | slice: 0, 1 -%}
-  {%- if first_char == '/' -%}
-    {%- assign og_image = _src -%}
+{%- if og_source != '' -%}
+  {%- if og_source contains '://' -%}
+    {%- assign og_image = og_source -%}
   {%- else -%}
-    {%- assign cleaned = _src | replace: './', '' -%}
+    {%- assign cleaned = og_source | replace: './', '' -%}
     {%- assign og_image = '/' | append: base | append: '/' | append: cleaned -%}
     {%- assign og_image = og_image | replace: '//', '/' -%}
   {%- endif -%}
