@@ -61,6 +61,7 @@ date_formats:
 
 exclude:
   - _local
+  - vendor
 
 logo: /assets/img/the_interurbanist_flag_1411x294.jpg
 
