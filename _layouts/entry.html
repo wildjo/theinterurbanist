@@ -54,17 +54,18 @@ layout: default
     </section>
 
   {% elsif page.images and page.images.size == 1 %}
-    {%- capture resolved -%}{% include media_url.html src=page.images[0].src item=page %}{%- endcapture -%}
+    {%- assign hero_image = page.images | first -%}
+    {%- capture resolved -%}{% include media_url.html src=hero_image.src item=page %}{%- endcapture -%}
     {%- assign resolved = resolved | strip -%}
     {%- if resolved == '' -%}
-      {%- assign resolved = page.images[0].src | to_s | strip -%}
+      {%- assign resolved = hero_image.src | to_s | strip -%}
     {%- endif -%}
 
     <figure class="hero" itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
       <a href="{{ resolved | relative_url }}" class="lb" data-group="single">
-        <img src="{{ resolved | relative_url }}" alt="{{ page.images[0].alt | default: '' }}">
+        <img src="{{ resolved | relative_url }}" alt="{{ hero_image.alt | default: '' }}">
       </a>
-      {% if page.images[0].caption %}<figcaption>{{ page.images[0].caption }}</figcaption>{% endif %}
+      {% if hero_image.caption %}<figcaption>{{ hero_image.caption }}</figcaption>{% endif %}
       <!-- Schema.org image candidate -->
       <meta itemprop="url" content="{{ resolved | absolute_url }}">
     </figure>
