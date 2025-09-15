@@ -5,39 +5,40 @@ title: Home
 
 <div class="sections-view">
   {% assign tales = site.pages | where_exp:"p","p.url contains '/tales/'" %}
+  {% assign default_card_format = site.date_formats.card_default | default: "%b %-d, %Y" %}
+  {% assign default_entry_format = site.date_formats.entry_default | default: "%b %-d, %Y" %}
+  {% assign tales_section = site.sections | where: "slug", "tales" | first %}
+  {% assign tales_sort_key = 'path' %}
+  {% assign tales_sort_direction = 'desc' %}
+  {% if tales_section and tales_section.sort %}
+    {% if tales_section.sort.key %}{% assign tales_sort_key = tales_section.sort.key %}{% endif %}
+    {% if tales_section.sort.direction %}{% assign tales_sort_direction = tales_section.sort.direction %}{% endif %}
+  {% endif %}
+  {% assign tales_list = tales | sort: tales_sort_key %}
+  {% assign tales_direction = tales_sort_direction | to_s | downcase | strip %}
+  {% if tales_direction == 'desc' %}
+    {% assign tales_list = tales_list | reverse %}
+  {% endif %}
+  {% assign tales_card_settings = nil %}
+  {% if tales_section and tales_section.card %}
+    {% assign tales_card_settings = tales_section.card %}
+  {% endif %}
 
   <div class="grid">
     <!-- Tales / longform (preserved) -->
     <section class="col">
       <header class="col-header"><h2>📝 Tales from the Independent</h2></header>
       <ul class="col-list">
-        {% assign list = tales | sort: 'path' | reverse %}
-        {% for entry in list limit: 20 %}
+        {% for entry in tales_list limit: 20 %}
           <li>
             <a class="card" href="{{ entry.url | relative_url }}">
               {% assign hero = entry.images | first %}
-              <div class="card-media">
-                {% if hero %}
-                  {% assign _src = hero.src %}
-                  {% assign first = _src | slice: 0, 1 %}
-                  {% assign cleaned = _src | replace: './', '' %}
-                  {% if _src contains '://' %}
-                    {% assign resolved = _src %}
-                  {% elsif first == '/' %}
-                    {% assign resolved = _src %}
-                  {% else %}
-                    {% assign base = entry.path | replace: entry.name, '' %}
-                    {% assign resolved = '/' | append: base | append: cleaned %}
-                  {% endif %}
-                  <img src="{{ resolved | relative_url }}" alt="{{ hero.alt | default: '' }}">
-                {% else %}
-                  <img src="{{ '/assets/placeholders/placeholder_card_400x300.png' | relative_url }}" alt="">
-                {% endif %}
-              </div>
+              {% include card_media.html image=hero item=entry %}
               <div class="card-body">
                 <h3 class="card-title">{{ entry.title }}</h3>
                 <p class="card-meta">
-                  <time>{% include date.html doc=entry format="%b %-d, %Y" %}</time>
+                  {% capture card_fmt -%}{% include resolve_date_format.html settings=tales_card_settings doc=entry default=default_card_format %}{%- endcapture %}
+                  <time>{% include date.html doc=entry format=card_fmt %}</time>
                 </p>
                 {% if entry.summary %}<p class="card-summary">{{ entry.summary }}</p>{% endif %}
               </div>
@@ -58,11 +59,18 @@ title: Home
       {% assign slug  = s.slug %}
 
       {% assign collection = site.pages | where: "section", slug %}
-      {% if slug == 'events' %}
-        {% assign list = collection | sort: 'starts_at' %}
-      {% else %}
-        {% assign list = collection | sort: 'path' | reverse %}
+      {% assign sort_key = 'path' %}
+      {% assign sort_direction = 'desc' %}
+      {% if s.sort %}
+        {% if s.sort.key %}{% assign sort_key = s.sort.key %}{% endif %}
+        {% if s.sort.direction %}{% assign sort_direction = s.sort.direction %}{% endif %}
       {% endif %}
+      {% assign list = collection | sort: sort_key %}
+      {% assign normalized_direction = sort_direction | to_s | downcase | strip %}
+      {% if normalized_direction == 'desc' %}
+        {% assign list = list | reverse %}
+      {% endif %}
+      {% assign card_settings = s.card %}
 
       <section class="col">
         <header class="col-header"><h2>{{ label }}</h2></header>
@@ -71,38 +79,13 @@ title: Home
             <li>
               <a class="card card-compact" href="{{ entry.url | relative_url }}">
                 {% assign hero = entry.images | first %}
-                <div class="card-media">
-                  {% if hero %}
-                    {% assign _src = hero.src %}
-                    {% assign first = _src | slice: 0, 1 %}
-                    {% assign cleaned = _src | replace: './', '' %}
-                    {% if _src contains '://' %}
-                      {% assign resolved = _src %}
-                    {% elsif first == '/' %}
-                      {% assign resolved = _src %}
-                    {% else %}
-                      {% assign base = entry.path | replace: entry.name, '' %}
-                      {% assign resolved = '/' | append: base | append: cleaned %}
-                    {% endif %}
-                    <img src="{{ resolved | relative_url }}" alt="{{ hero.alt | default: '' }}">
-                  {% else %}
-                    <img src="{{ '/assets/placeholders/placeholder_card_400x300.png' | relative_url }}" alt="">
-                  {% endif %}
-                </div>
+                {% include card_media.html image=hero item=entry %}
                 <div class="card-body">
                   <h3 class="card-title">{{ entry.title }}</h3>
                   <p class="card-meta">
-                    <time>
-                      {% capture fmt %}
-                        {% if slug == 'events' and entry.starts_at %}
-                          %b %-d, %Y • %l:%M %P
-                        {% else %}
-                          %b %-d, %Y
-                        {% endif %}
-                      {% endcapture %}
-                      {% include date.html doc=entry format=fmt %}
-                    </time>
-                    {% if entry.location and slug == 'events' %} · {{ entry.location }}{% endif %}
+                    {% capture card_fmt -%}{% include resolve_date_format.html settings=card_settings doc=entry default=default_card_format %}{%- endcapture %}
+                    <time>{% include date.html doc=entry format=card_fmt %}</time>
+                    {% if card_settings.show_location and entry.location %} · {{ entry.location }}{% endif %}
                   </p>
                 </div>
               </a>
@@ -142,31 +125,19 @@ title: Home
       <li class="tl-item">
         <a class="card" href="{{ entry.url | relative_url }}">
           {% assign hero = entry.images | first %}
-          <div class="card-media">
-            {% if hero %}
-              {% assign _src = hero.src %}
-              {% assign first = _src | slice: 0, 1 %}
-              {% assign cleaned = _src | replace: './', '' %}
-              {% if _src contains '://' %}
-                {% assign resolved = _src %}
-              {% elsif first == '/' %}
-                {% assign resolved = _src %}
-              {% else %}
-                {% assign base = entry.path | replace: entry.name, '' %}
-                {% assign resolved = '/' | append: base | append: cleaned %}
-              {% endif %}
-              <img src="{{ resolved | relative_url }}" alt="{{ hero.alt | default: '' }}">
-            {% else %}
-              <img src="{{ '/assets/placeholders/placeholder_card_400x300.png' | relative_url }}" alt="">
-            {% endif %}
-          </div>
+          {% include card_media.html image=hero item=entry %}
           <div class="card-body">
             {% if sec_slug != '' %}
               <h6 class="card-section">{{ sec_label | upcase }}</h6>
             {% endif %}
             <h3 class="card-title">{{ entry.title }}</h3>
             <p class="card-meta">
-              <time>{% include date.html doc=entry format="%b %-d, %Y" %}</time>
+              {% assign entry_settings = nil %}
+              {% if sec_obj and sec_obj.entry %}
+                {% assign entry_settings = sec_obj.entry %}
+              {% endif %}
+              {% capture entry_fmt -%}{% include resolve_date_format.html settings=entry_settings doc=entry default=default_entry_format %}{%- endcapture %}
+              <time>{% include date.html doc=entry format=entry_fmt %}</time>
               {% if sec_slug != '' %} · {{ sec_label }}{% endif %}
             </p>
             {% if entry.summary %}<p class="card-summary">{{ entry.summary }}</p>{% endif %}

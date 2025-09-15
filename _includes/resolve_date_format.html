@@ -1,0 +1,32 @@
+{%- assign default_format = include.default | default: "%b %-d, %Y" -%}
+{%- assign selected_format = default_format -%}
+{%- assign settings = include.settings -%}
+{%- if settings -%}
+  {%- if settings.default_format -%}
+    {%- assign selected_format = settings.default_format -%}
+  {%- endif -%}
+  {%- if settings.date_format -%}
+    {%- assign use_custom = true -%}
+    {%- if settings.date_field -%}
+      {%- assign field_name = settings.date_field -%}
+      {%- assign doc = include.doc -%}
+      {%- if doc -%}
+        {%- assign field_value = doc[field_name] -%}
+        {%- if field_value == nil -%}
+          {%- assign use_custom = false -%}
+        {%- else -%}
+          {%- assign field_string = field_value | to_s | strip -%}
+          {%- if field_string == '' -%}
+            {%- assign use_custom = false -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- else -%}
+        {%- assign use_custom = false -%}
+      {%- endif -%}
+    {%- endif -%}
+    {%- if use_custom -%}
+      {%- assign selected_format = settings.date_format -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endif -%}
+{{ selected_format | strip }}

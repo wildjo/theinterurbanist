@@ -24,13 +24,40 @@ defaults:
 
 # Canonical section definitions (single source of truth)
 sections:
-  - { slug: tales,       label: "Tales from the Independent" }
-  - { slug: events,      label: "Events Notice" }
-  - { slug: management,  label: "From the Management" }
-  - { slug: lostnfound,  label: "Lost & Found" }
-  - { slug: safety,      label: "Safety Tips for Long Lives" }
-  - { slug: style,       label: "Style & Grace" }
-  - { slug: visions,     label: "Visions of Independent Living" }
+  - slug: tales
+    label: "Tales from the Independent"
+  - slug: events
+    label: "Events Notice"
+    sort:
+      key: starts_at
+      direction: asc
+    card:
+      date_format: "%b %-d, %Y • %l:%M %P"
+      date_field: starts_at
+      default_format: "%b %-d, %Y"
+      show_location: true
+    entry:
+      date_format: "%b %-d, %Y • %l:%M %P"
+      date_field: starts_at
+  - slug: management
+    label: "From the Management"
+  - slug: lostnfound
+    label: "Lost & Found"
+  - slug: safety
+    label: "Safety Tips for Long Lives"
+  - slug: style
+    label: "Style & Grace"
+  - slug: visions
+    label: "Visions of Independent Living"
+    entry:
+      date_format: "%b %-d, %Y • %l:%M %P"
+
+placeholders:
+  card: /assets/placeholders/placeholder_card_400x300.png
+
+date_formats:
+  card_default: "%b %-d, %Y"
+  entry_default: "%b %-d, %Y"
 
 exclude:
   - _local
