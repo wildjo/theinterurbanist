@@ -7,8 +7,9 @@
 {%- assign base = site.baseurl | default: '' -%}
 
 {%- assign og_source = '' -%}
-{%- if page.images and page.images.size > 0 and page.images[0].src -%}
-  {%- capture og_candidate -%}{% include media_url.html src=page.images[0].src item=page %}{%- endcapture -%}
+{%- assign primary_image = page.images | first -%}
+{%- if primary_image and primary_image.src -%}
+  {%- capture og_candidate -%}{% include media_url.html src=primary_image.src item=page %}{%- endcapture -%}
   {%- assign og_source = og_candidate | strip -%}
 {%- endif -%}
 {%- if og_source == '' and site.logo -%}
