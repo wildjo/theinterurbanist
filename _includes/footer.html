@@ -1,6 +1,17 @@
 <footer class="site-footer mini" role="contentinfo" aria-label="Site footer">
   <hr class="footer-rule" aria-hidden="true">
 
+  <div class="text-size-controls">
+    <p class="text-size-text">
+      <span class="text-size-label" id="text-size-label">Text size</span>
+      <span class="text-size-instructions" id="text-size-desc">Use these buttons to make the reading text larger or smaller across the site.</span>
+    </p>
+    <div class="text-size-buttons" role="group" aria-labelledby="text-size-label" aria-describedby="text-size-desc">
+      <button class="text-size-btn fs-inc" type="button" aria-label="Increase text size">A+</button>
+      <button class="text-size-btn fs-dec" type="button" aria-label="Decrease text size">A−</button>
+    </div>
+  </div>
+
   <!-- one-line nav, 9px -->
   <p class="footer-links">
     <a href="{{ '/about/' | relative_url }}">About</a> ·
