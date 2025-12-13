@@ -1,11 +1,11 @@
 ---
 title: "Community Meeting on Building Maintenance and Resident Concerns"
-date: '2025-12-13'
+date: '2025-12-12'
 author: Transcript
 section: management
 type: story
 images:
-- src: 2025-12-13-december-resident-update.jpeg
+- src: 2025-12-12-december-resident-update.jpeg
   alt: SHAG staff answers resident questions
 ---
 # Community Meeting on Building Maintenance and Resident Concerns
