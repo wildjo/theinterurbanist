@@ -1,30 +1,22 @@
 <a class="skip" href="#content">Skip to content</a>
 <div class="brand">
-<a href="{{ '/' | relative_url }}">
-  <img src="{{ '/assets/img/shag-bicyclist-flag-1760x465.png' | relative_url }}" alt="The Interurbanist banner" class="brand-flag" width="700" height="150">
-</a>  
-  <div>
-    <h1 class="site-title">The Interurbanist</h1>
-    {% assign entries = site.pages | where:"layout","entry" %}
-    {% assign latest = nil %}
-    {% assign latest_ts = 0 %}
-    {% for entry in entries %}
-      {% if entry.date %}
-        {% assign doc_ts = entry.date | date: '%s' | plus: 0 %}
-        {% if latest == nil or doc_ts > latest_ts %}
-          {% assign latest = entry %}
-          {% assign latest_ts = doc_ts %}
-        {% endif %}
-      {% endif %}
-    {% endfor %}
-    {% if latest == nil %}
-      {% assign fallback = entries | sort: "path" | reverse %}
-      {% assign latest = fallback | first %}
-    {% endif %}
-    <p class="site-desc">
-      SHAG Interurban's Arts, Style, and Entertainment publication |
-      Most recent post:
-      {% if latest %}{% include date.html doc=latest format="%b %-d" %}{% else %}n/a{% endif %}.
-    </p>
-  </div>
+  <a href="{{ '/' | relative_url }}" aria-label="The Interurbanist home">
+    <!-- Full logo with bicyclist - shown when header is expanded -->
+    <img 
+      src="{{ '/assets/img/interurbanist-bicyclist.svg' | relative_url }}" 
+      alt="The Interurbanist" 
+      class="brand-logo-full"
+      width="500" 
+      height="132"
+    >
+    <!-- Compact logo - shown when header is collapsed -->
+    <img 
+      src="{{ '/assets/img/interurbanist.svg' | relative_url }}" 
+      alt="The Interurbanist" 
+      class="brand-logo-compact"
+      width="300" 
+      height="32"
+    >
+  </a>
 </div>
+<p class="brand-tagline">SHAG Interurban's Arts, Style, and Entertainment publication</p>

@@ -1,50 +1,43 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="mode-timeline">
 <head>
   {% include head.html %}
 
-{%- comment -%} Resolve an image for OG/Twitter without using filters in comparisons {%- endcomment -%}
-{%- assign base = site.baseurl | default: '' -%}
-
-{%- assign og_source = '' -%}
-{%- assign primary_image = page.images | first -%}
-{%- if primary_image and primary_image.src -%}
-  {%- capture og_candidate -%}{% include media_url.html src=primary_image.src item=page %}{%- endcapture -%}
-  {%- assign og_source = og_candidate | strip -%}
-{%- endif -%}
-{%- if og_source == '' and site.logo -%}
-  {%- assign og_source = site.logo | to_s | strip -%}
-{%- endif -%}
-
-{%- assign og_image = '' -%}
-{%- if og_source != '' -%}
-  {%- if og_source contains '://' -%}
-    {%- assign og_image = og_source -%}
-  {%- else -%}
-    {%- assign cleaned = og_source | replace: './', '' -%}
-    {%- assign og_image = '/' | append: base | append: '/' | append: cleaned -%}
-    {%- assign og_image = og_image | replace: '//', '/' -%}
+  {%- comment -%} Resolve an image for OG/Twitter {%- endcomment -%}
+  {%- assign base = site.baseurl | default: '' -%}
+  {%- assign og_source = '' -%}
+  {%- assign primary_image = page.images | first -%}
+  {%- if primary_image and primary_image.src -%}
+    {%- capture og_candidate -%}{% include media_url.html src=primary_image.src item=page %}{%- endcapture -%}
+    {%- assign og_source = og_candidate | strip -%}
   {%- endif -%}
-{%- endif -%}
+  {%- if og_source == '' and site.logo -%}
+    {%- assign og_source = site.logo | to_s | strip -%}
+  {%- endif -%}
 
-{%- if og_image != '' -%}
+  {%- assign og_image = '' -%}
+  {%- if og_source != '' -%}
+    {%- if og_source contains '://' -%}
+      {%- assign og_image = og_source -%}
+    {%- else -%}
+      {%- assign cleaned = og_source | replace: './', '' -%}
+      {%- assign og_image = '/' | append: base | append: '/' | append: cleaned -%}
+      {%- assign og_image = og_image | replace: '//', '/' -%}
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- if og_image != '' -%}
   <meta property="og:image" content="{{ og_image | absolute_url }}">
-  <meta name="twitter:image" content="{{ og_image | absolute_url }}">
-{%- endif -%}
-
-
-  {%- comment -%} If the seo tag didn’t set an image, ensure we provide one. {%- endcomment -%}
-  <meta property="og:image" content="{{ ogimg }}">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="{{ ogimg }}">
+  <meta name="twitter:image" content="{{ og_image | absolute_url }}">
+  {%- endif -%}
   {% if page.layout == 'entry' %}
-    <meta property="og:type" content="article">
+  <meta property="og:type" content="article">
   {% endif %}
 </head>
-<body class="mode-sections">
+<body>
   <header class="site-header">
     {% include header.html %}
-    {% include tabs.html %}
   </header>
 
   <main id="content" class="content">

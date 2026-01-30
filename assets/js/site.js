@@ -1,77 +1,285 @@
-// site.js — sane, self-contained behaviors
+// site.js — The Interurbanist
+// Header collapse, view toggle, font sizing, lightbox
 (() => {
   "use strict";
 
-  const qs  = (sel, ctx=document) => ctx.querySelector(sel);
-  const qsa = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
+  const qs = (sel, ctx = document) => ctx.querySelector(sel);
+  const qsa = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
-  // ----- View switching (Timeline ↔ Sections) -----
-  const sectionsView = qs(".sections-view");
-  const timelineView = qs(".timeline-view");
-  const onHome = !!sectionsView && !!timelineView;
+  // ==========================================================================
+  // Header Collapse on Scroll
+  // ==========================================================================
 
-  function show(mode) {
-    if (!onHome) return;
-    if (mode === "sections") {
-      sectionsView.style.display = "";
-      timelineView.style.display = "none";
-      document.documentElement.classList.add("mode-sections");
-      document.documentElement.classList.remove("mode-timeline");
+  const header = qs(".site-header");
+  let lastScroll = 0;
+  const collapseThreshold = 100;
+
+  function handleScroll() {
+    if (!header) return;
+    const currentScroll = window.scrollY;
+
+    if (currentScroll > collapseThreshold) {
+      header.classList.add("collapsed");
     } else {
-      sectionsView.style.display = "none";
-      timelineView.style.display = "";
-      document.documentElement.classList.add("mode-timeline");
-      document.documentElement.classList.remove("mode-sections");
+      header.classList.remove("collapsed");
     }
+
+    lastScroll = currentScroll;
   }
 
-  // Honor ?view=sections|timeline on load
-  document.addEventListener("DOMContentLoaded", () => {
-    const params = new URLSearchParams(location.search);
-    const requested = params.get("view");
-    if (onHome && (requested === "sections" || requested === "timeline")) {
-      show(requested);
+  window.addEventListener("scroll", handleScroll, { passive: true });
+
+  // ==========================================================================
+  // View Switching (Timeline ↔ Sections)
+  // ==========================================================================
+
+  const sectionsView = qs(".sections-view");
+  const timelineView = qs(".timeline-view");
+  const onHome = !!sectionsView || !!timelineView;
+
+  function setView(mode) {
+    const root = document.documentElement;
+
+    if (mode === "sections") {
+      root.classList.add("mode-sections");
+      root.classList.remove("mode-timeline");
+    } else {
+      root.classList.add("mode-timeline");
+      root.classList.remove("mode-sections");
     }
 
-    // On Home, intercept tab clicks for instant switching; elsewhere, let them navigate home
-    if (onHome) {
-      qsa("a.mode-toggle[data-mode]").forEach(a => {
-        a.addEventListener("click", ev => {
-          ev.preventDefault();
-          const mode = a.dataset.mode === "sections" ? "sections" : "timeline";
-          show(mode);
-          const url = new URL(location.href);
-          url.searchParams.set("view", mode);
-          history.replaceState({}, "", url);
-        });
-      });
+    // Update button states
+    qsa(".view-toggle-btn").forEach(btn => {
+      btn.classList.toggle("active", btn.dataset.mode === mode);
+    });
+
+    // Save preference
+    try {
+      localStorage.setItem("viewMode", mode);
+    } catch (e) {}
+
+    // Update URL without reload
+    const url = new URL(location.href);
+    url.searchParams.set("view", mode);
+    history.replaceState({}, "", url);
+  }
+
+  function initView() {
+    // Check URL param first
+    const params = new URLSearchParams(location.search);
+    const urlMode = params.get("view");
+
+    if (urlMode === "sections" || urlMode === "timeline") {
+      setView(urlMode);
+      return;
     }
+
+    // Then check localStorage
+    try {
+      const saved = localStorage.getItem("viewMode");
+      if (saved === "sections" || saved === "timeline") {
+        setView(saved);
+        return;
+      }
+    } catch (e) {}
+
+    // Default to timeline
+    setView("timeline");
+  }
+
+  // Set up toggle buttons
+  document.addEventListener("DOMContentLoaded", () => {
+    initView();
+
+    qsa(".view-toggle-btn[data-mode]").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        setView(btn.dataset.mode);
+      });
+    });
+
+    // Also handle old-style tab links if present
+    qsa("a.mode-toggle[data-mode]").forEach(a => {
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        setView(a.dataset.mode);
+      });
+    });
   });
 
-  // ----- Font size controls (persisted) -----
-  const minScale = 0.85, maxScale = 1.6, step = 0.1;
-  let scale = parseFloat(localStorage.getItem("uiScale") || "1");
-  applyScale();
+  // ==========================================================================
+  // Font Size Controls (Persisted)
+  // ==========================================================================
+
+  const minScale = 0.85;
+  const maxScale = 1.6;
+  const step = 0.1;
+
+  let scale = 1;
+  try {
+    scale = parseFloat(localStorage.getItem("uiScale") || "1");
+  } catch (e) {}
 
   function applyScale() {
     document.documentElement.style.fontSize = (scale * 100) + "%";
   }
+
   function saveScale() {
-    localStorage.setItem("uiScale", String(scale));
+    try {
+      localStorage.setItem("uiScale", String(scale));
+    } catch (e) {}
     applyScale();
   }
 
-  qsa(".fs-inc").forEach(btn => btn.addEventListener("click", () => {
-    scale = Math.min(maxScale, +(scale + step).toFixed(2));
-    saveScale();
-  }));
-  qsa(".fs-dec").forEach(btn => btn.addEventListener("click", () => {
-    scale = Math.max(minScale, +(scale - step).toFixed(2));
-    saveScale();
-  }));
+  // Apply saved scale on load
+  applyScale();
 
-  // ----- Lightbox safe init (if present) -----
-  if (typeof window.Lightbox === "object" && typeof window.Lightbox.init === "function") {
-    try { window.Lightbox.init(); } catch (_) {}
+  document.addEventListener("DOMContentLoaded", () => {
+    qsa(".fs-inc, .text-size-inc").forEach(btn => {
+      btn.addEventListener("click", () => {
+        scale = Math.min(maxScale, +(scale + step).toFixed(2));
+        saveScale();
+      });
+    });
+
+    qsa(".fs-dec, .text-size-dec").forEach(btn => {
+      btn.addEventListener("click", () => {
+        scale = Math.max(minScale, +(scale - step).toFixed(2));
+        saveScale();
+      });
+    });
+  });
+
+  // ==========================================================================
+  // Sections Horizontal Scroll (Wrap-around)
+  // ==========================================================================
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const strip = qs(".sections-strip");
+    if (!strip) return;
+
+    const columns = qsa(".section-column", strip);
+    if (columns.length < 2) return;
+
+    // Add navigation hints
+    let currentSection = 0;
+
+    // Detect which section is visible
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const index = columns.indexOf(entry.target);
+          if (index !== -1) currentSection = index;
+        }
+      });
+    }, {
+      root: strip,
+      threshold: 0.5
+    });
+
+    columns.forEach(col => observer.observe(col));
+
+    // Keyboard navigation for sections
+    strip.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        currentSection = (currentSection + 1) % columns.length;
+        columns[currentSection].scrollIntoView({ behavior: "smooth", inline: "start" });
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        currentSection = (currentSection - 1 + columns.length) % columns.length;
+        columns[currentSection].scrollIntoView({ behavior: "smooth", inline: "start" });
+      }
+    });
+  });
+
+  // ==========================================================================
+  // Lightbox (if not already loaded)
+  // ==========================================================================
+
+  if (typeof window.Lightbox !== "object") {
+    document.addEventListener("DOMContentLoaded", () => {
+      // Create overlay if it doesn't exist
+      if (qs(".lb-overlay")) return;
+
+      const overlay = document.createElement("div");
+      overlay.className = "lb-overlay";
+      overlay.innerHTML = `
+        <img class="lb-img" alt="">
+        <div class="lb-ui">
+          <button class="lb-btn prev" aria-label="Previous">◀</button>
+          <button class="lb-btn next" aria-label="Next">▶</button>
+          <button class="lb-btn close" aria-label="Close">✕</button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      let group = [];
+      let index = 0;
+
+      const imgEl = () => overlay.querySelector(".lb-img");
+
+      function openAt(i, arr) {
+        group = arr || group;
+        index = (i + group.length) % group.length;
+        imgEl().src = group[index];
+        overlay.classList.add("active");
+        document.body.style.overflow = "hidden";
+      }
+
+      function close() {
+        overlay.classList.remove("active");
+        imgEl().src = "";
+        document.body.style.overflow = "";
+      }
+
+      overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) close();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (!overlay.classList.contains("active")) return;
+        if (e.key === "Escape") close();
+        if (e.key === "ArrowRight") openAt(index + 1);
+        if (e.key === "ArrowLeft") openAt(index - 1);
+      });
+
+      overlay.querySelector(".close").addEventListener("click", (e) => {
+        e.stopPropagation();
+        close();
+      });
+
+      overlay.querySelector(".next").addEventListener("click", (e) => {
+        e.stopPropagation();
+        openAt(index + 1);
+      });
+
+      overlay.querySelector(".prev").addEventListener("click", (e) => {
+        e.stopPropagation();
+        openAt(index - 1);
+      });
+
+      // Handle clicks on lightbox-enabled images
+      document.addEventListener("click", (e) => {
+        const a = e.target.closest("a.lb");
+        if (!a) return;
+
+        e.preventDefault();
+        const g = a.dataset.group || ("solo-" + Math.random());
+        const groupEls = qsa(`a.lb[data-group="${g}"]`);
+        const arr = groupEls.length ? groupEls.map(el => el.getAttribute("href")) : [a.getAttribute("href")];
+        openAt(arr.indexOf(a.getAttribute("href")), arr);
+      });
+
+      // Also handle images in entry body
+      document.addEventListener("click", (e) => {
+        const img = e.target.closest(".entry-body img");
+        if (!img || img.closest("a")) return;
+
+        e.preventDefault();
+        openAt(0, [img.currentSrc || img.src]);
+      });
+    });
   }
+
 })();

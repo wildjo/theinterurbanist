@@ -1,36 +1,48 @@
-<footer class="site-footer mini" role="contentinfo" aria-label="Site footer">
-  <hr class="footer-rule" aria-hidden="true">
+<footer class="site-footer" role="contentinfo" aria-label="Site footer">
+  
+  <!-- Controls row: View toggle + Text size -->
+  <div class="footer-controls">
+    <!-- View Toggle (Timeline / Sections) -->
+    <div class="view-toggle" role="group" aria-label="View mode">
+      <button class="view-toggle-btn" data-mode="timeline" type="button">
+        ⏲️ Timeline
+      </button>
+      <button class="view-toggle-btn" data-mode="sections" type="button">
+        📁 Sections
+      </button>
+    </div>
 
-  <div class="text-size-controls">
-    <p class="text-size-text">
-      <span class="text-size-label" id="text-size-label">Text size</span>
-      <span class="text-size-instructions" id="text-size-desc">Use these buttons to make the reading text larger or smaller across the site.</span>
-    </p>
-    <div class="text-size-buttons" role="group" aria-labelledby="text-size-label" aria-describedby="text-size-desc">
-      <button class="text-size-btn fs-inc" type="button" aria-label="Increase text size">A+</button>
-      <button class="text-size-btn fs-dec" type="button" aria-label="Decrease text size">A−</button>
+    <!-- Text Size Controls -->
+    <div class="text-size-controls" role="group" aria-label="Text size">
+      <span class="text-size-label">Text size:</span>
+      <button class="text-size-btn text-size-dec fs-dec" type="button" aria-label="Decrease text size">A−</button>
+      <button class="text-size-btn text-size-inc fs-inc" type="button" aria-label="Increase text size">A+</button>
     </div>
   </div>
 
-  <!-- one-line nav, 9px -->
-  <p class="footer-links">
-    <a href="{{ '/about/' | relative_url }}">About</a> ·
-    <a href="{{ '/submissions/' | relative_url }}">Submissions</a> ·
-    <a href="{{ '/masthead/' | relative_url }}">Masthead</a> ·
+  <!-- Navigation links -->
+  <nav class="footer-links" aria-label="Footer navigation">
+    <a href="{{ '/about/' | relative_url }}">About</a>
+    <a href="{{ '/submissions/' | relative_url }}">Submissions</a>
+    <a href="{{ '/masthead/' | relative_url }}">Masthead</a>
     <a href="{{ '/legal/' | relative_url }}">Legal</a>
+  </nav>
+
+  <!-- Legal/license text -->
+  <p class="footer-legal">
+    Unless otherwise stated, the website's templates, CSS and copy are published under The Unlicense. 
+    Individual works by residents (stories, photos, audio, video) remain the sole property of their creators. 
+    By submitting, contributors grant <em>The Interurbanist</em> a non-exclusive license to publish their work 
+    on this site and in archived versions.
   </p>
 
-  <!-- all one paragraph, fully justified, ~7px -->
-  <p class="footer-min">
-    Unless otherwise stated, the website’s templates, CSS and copy written by ChatGPT 5 are published under The Unlicense. Individual works by residents (stories, photos, audio, video) remain the sole property of their creators. By submitting, contributors grant <em>The Interurbanist</em> a non-exclusive license to publish their work on this site and in archived versions of the newsletter. That license does not unlicense their work; any reuse outside this site requires the creator’s permission.
+  <!-- Attribution -->
+  <p class="footer-attribution">
+    © {{ site.time | date: "%Y" }} The Interurbanist · 
+    Built with <a href="https://jekyllrb.com/">Jekyll</a> · 
+    Hosted on <a href="https://pages.github.com/">GitHub Pages</a>
   </p>
 
-  <!-- third line, 9px -->
-  <p class="footer-fine">
-    Unlicensed by {{ site.time | date: "%Y" }} The Interurbanist. Built with <a href="https://jekyllrb.com/">Jekyll</a>. Hosted on <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site">GitHub Pages</a>.
-  </p>
-
-  <!-- existing scripts stay here so nothing else breaks -->
-  <script defer src="{{ '/assets/js/lightbox.js?v=2' | relative_url }}"></script>
-  <script defer src="{{ '/assets/js/site.js?v=4' | relative_url }}"></script>
+  <!-- Scripts -->
+  <script defer src="{{ '/assets/js/site.js?v=5' | relative_url }}"></script>
 </footer>

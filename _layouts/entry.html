@@ -12,27 +12,53 @@ layout: default
   {%- assign page_entry_settings = page_section.entry -%}
 {%- endif -%}
 {%- capture page_entry_format -%}{% include resolve_date_format.html settings=page_entry_settings doc=page default=default_entry_format %}{%- endcapture -%}
+
+{%- comment -%} Get section label {%- endcomment -%}
+{%- assign section_label = '' -%}
+{%- if page_section and page_section.label -%}
+  {%- assign section_label = page_section.label -%}
+{%- elsif page_section_slug != '' -%}
+  {%- assign section_label = page_section_slug | replace: '-', ' ' | capitalize -%}
+{%- endif -%}
+
 <article class="entry" itemscope itemtype="https://schema.org/Article">
   <header class="entry-header">
-    <h1 class="entry-title" itemprop="headline">{{ page.title }}</h1>
-    <div class="meta">
-      <time
+    <!-- Top row: Section label (left) + Date (right) -->
+    <div class="entry-top-row">
+      {% if section_label != '' %}
+      <p class="entry-section">{{ section_label }}</p>
+      {% else %}
+      <p class="entry-section">&nbsp;</p>
+      {% endif %}
+      <time class="entry-date"
         datetime="{% include date.html doc=page format='%Y-%m-%dT%H:%M:00%z' %}"
         itemprop="datePublished">
         {% include date.html doc=page format=page_entry_format %}
       </time>
-      {% if page.author %} · <span class="author" itemprop="author">{{ page.author }}</span>{% endif %}
-      {% if page.type %} · <span class="type">{{ page.type }}</span>{% endif %}
-      {% if page.last_modified_at %}
-        <meta itemprop="dateModified" content="{{ page.last_modified_at | date_to_xmlschema }}">
-      {% endif %}
-      {% if page.summary %}
-        <meta itemprop="description" content="{{ page.summary }}">
-      {% endif %}
     </div>
+
+    <!-- Headline -->
+    <h1 class="entry-title" itemprop="headline">{{ page.title }}</h1>
+
+    <!-- Additional meta (author, type) -->
+    {% if page.author or page.type %}
+    <p class="meta">
+      {% if page.author %}<span class="author" itemprop="author">{{ page.author }}</span>{% endif %}
+      {% if page.author and page.type %} · {% endif %}
+      {% if page.type %}<span class="type">{{ page.type }}</span>{% endif %}
+    </p>
+    {% endif %}
+
+    {% if page.last_modified_at %}
+    <meta itemprop="dateModified" content="{{ page.last_modified_at | date_to_xmlschema }}">
+    {% endif %}
+    {% if page.summary %}
+    <meta itemprop="description" content="{{ page.summary }}">
+    {% endif %}
   </header>
 
   {% if page.images and page.images.size > 1 %}
+    <!-- Gallery of multiple images -->
     <section class="gallery" aria-label="Image gallery" itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
       <div class="gallery-strip">
         {% for img in page.images %}
@@ -42,11 +68,9 @@ layout: default
             {%- assign resolved = img.src | to_s | strip -%}
           {%- endif -%}
 
-          <a href="{{ resolved | relative_url }}" class="lb" data-group="fm">
-            <img src="{{ resolved | relative_url }}" alt="{{ img.alt | default: '' }}">
+          <a href="{{ resolved | relative_url }}" class="lb" data-group="gallery">
+            <img src="{{ resolved | relative_url }}" alt="{{ img.alt | default: '' }}" loading="lazy">
           </a>
-
-          <!-- Schema.org image candidate -->
           <meta itemprop="url" content="{{ resolved | absolute_url }}">
         {% endfor %}
       </div>
@@ -54,6 +78,7 @@ layout: default
     </section>
 
   {% elsif page.images and page.images.size == 1 %}
+    <!-- Single hero image -->
     {%- assign hero_image = page.images | first -%}
     {%- capture resolved -%}{% include media_url.html src=hero_image.src item=page %}{%- endcapture -%}
     {%- assign resolved = resolved | strip -%}
@@ -62,15 +87,15 @@ layout: default
     {%- endif -%}
 
     <figure class="hero" itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
-      <a href="{{ resolved | relative_url }}" class="lb" data-group="single">
+      <a href="{{ resolved | relative_url }}" class="lb" data-group="hero">
         <img src="{{ resolved | relative_url }}" alt="{{ hero_image.alt | default: '' }}">
       </a>
       {% if hero_image.caption %}<figcaption>{{ hero_image.caption }}</figcaption>{% endif %}
-      <!-- Schema.org image candidate -->
       <meta itemprop="url" content="{{ resolved | absolute_url }}">
     </figure>
   {% endif %}
 
+  <!-- Article body -->
   <div class="entry-body" itemprop="articleBody">
     {{ content }}
   </div>
