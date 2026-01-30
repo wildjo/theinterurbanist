@@ -118,11 +118,11 @@ img {
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
-/* Brand container */
+/* Brand container - centered */
 .brand {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: var(--space-md);
   padding: var(--space-md) var(--space-lg);
   transition: padding 0.3s ease;
 }
@@ -131,27 +131,16 @@ img {
   padding: var(--space-sm) var(--space-lg);
 }
 
-/* Full logo (bicyclist + text) - shown when not collapsed */
-.brand-logo-full {
+/* Header logo - centered */
+.brand-logo {
   display: block;
   width: min(100%, 500px);
   height: auto;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: width 0.3s ease;
 }
 
-.site-header.collapsed .brand-logo-full {
-  display: none;
-}
-
-/* Compact logo (text only) - shown when collapsed */
-.brand-logo-compact {
-  display: none;
-  height: 40px;
-  width: auto;
-}
-
-.site-header.collapsed .brand-logo-compact {
-  display: block;
+.site-header.collapsed .brand-logo {
+  width: min(100%, 350px);
 }
 
 /* Site title and description (hidden when using SVG logos) */
@@ -688,6 +677,20 @@ img {
 
 .footer-attribution a:hover {
   color: var(--accent);
+}
+
+/* Footer brand/logo - right aligned */
+.footer-brand {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--line);
+}
+
+.footer-logo {
+  width: min(250px, 60%);
+  height: auto;
 }
 
 /* ==========================================================================
