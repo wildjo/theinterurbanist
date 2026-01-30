@@ -120,27 +120,32 @@ img {
 
 /* Brand container - centered */
 .brand {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: block;
+  text-align: center;
   padding: var(--space-md) var(--space-lg);
   transition: padding 0.3s ease;
+}
+
+.brand a {
+  display: inline-block;
 }
 
 .site-header.collapsed .brand {
   padding: var(--space-sm) var(--space-lg);
 }
 
-/* Header logo - centered */
+/* Header logo - centered, cross-browser compatible */
 .brand-logo {
   display: block;
-  width: min(100%, 500px);
+  max-width: 500px;
+  width: 100%;
   height: auto;
-  transition: width 0.3s ease;
+  margin: 0 auto;
+  transition: max-width 0.3s ease;
 }
 
 .site-header.collapsed .brand-logo {
-  width: min(100%, 350px);
+  max-width: 350px;
 }
 
 /* Site title and description (hidden when using SVG logos) */
