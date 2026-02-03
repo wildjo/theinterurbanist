@@ -306,6 +306,40 @@ img {
   margin: 0 auto;
 }
 
+.elevator-uplifts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.elevator-uplifts-frame {
+  width: min(820px, 100%);
+  background: var(--panel);
+  border: 3px solid var(--frame);
+  border-radius: var(--frame-radius);
+  padding: var(--space-md);
+}
+
+.elevator-uplifts-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.elevator-uplifts-button {
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.elevator-uplifts-button img {
+  display: block;
+  width: auto;
+  height: 72px;
+}
+
 /* ==========================================================================
    Cards - Timeline View (Stacked, Vertical Scroll)
    ========================================================================== */

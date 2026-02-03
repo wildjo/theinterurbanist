@@ -112,6 +112,40 @@
         setView(a.dataset.mode);
       });
     });
+
+    // Elevator Uplifts random image
+    const elevator = qs(".elevator-uplifts");
+    if (elevator) {
+      const img = qs(".elevator-uplifts-image", elevator);
+      const btn = qs(".elevator-uplifts-button", elevator);
+      const count = parseInt(elevator.dataset.count || "0", 10);
+      const prefix = elevator.dataset.prefix || "";
+      const ext = elevator.dataset.ext || "jpg";
+      const pad = parseInt(elevator.dataset.pad || "3", 10);
+      const dir = elevator.dataset.dir || "";
+
+      const padNum = (n) => String(n).padStart(pad, "0");
+      const srcFor = (n) => `${dir}/${prefix}${padNum(n)}.${ext}`;
+
+      const pickRandom = () => {
+        if (!img || !btn || count <= 0) return;
+        if (count === 1) {
+          img.src = srcFor(1);
+          return;
+        }
+        const current = img.getAttribute("src") || "";
+        let next = current;
+        let guard = 0;
+        while (next === current && guard < 10) {
+          const n = Math.floor(Math.random() * count) + 1;
+          next = srcFor(n);
+          guard += 1;
+        }
+        img.src = next;
+      };
+
+      btn?.addEventListener("click", pickRandom);
+    }
   });
 
   // ==========================================================================
