@@ -1,27 +1,41 @@
 <a class="skip" href="#content">Skip to content</a>
 <div class="brand">
-  <a href="{{ '/' | relative_url }}" aria-label="The Interurbanist home">
-    <span class="brand-logo-wrap" aria-hidden="true">
-      <img 
-        src="{{ '/assets/img/shag-bicyclist-flag-1760x465.png' | relative_url }}"
-        alt=""
-        class="brand-logo brand-logo--full"
-        width="1760"
-        height="465"
+  <div class="brand-inner">
+    <a href="{{ '/' | relative_url }}" aria-label="The Interurbanist home" class="brand-link">
+      <span class="brand-logo-wrap" aria-hidden="true">
+        <img 
+          src="{{ '/assets/img/shag-bicyclist-flag-1760x465.png' | relative_url }}"
+          alt=""
+          class="brand-logo brand-logo--full"
+          width="1760"
+          height="465"
+          loading="eager"
+          decoding="async"
+        >
+        <img 
+          src="{{ '/assets/img/interurbanist.png' | relative_url }}"
+          alt=""
+          class="brand-logo brand-logo--compact"
+          width="1504"
+          height="158"
+          loading="eager"
+          decoding="async"
+        >
+      </span>
+      <span class="sr-only">The Interurbanist</span>
+    </a>
+    {% if page.url == "/" or page.url == "/index.html" %}
+    <a class="brand-cta" href="{{ '/elevator-uplifts/' | relative_url }}" aria-label="Elevator Uplifts">
+      <img
+        src="{{ '/assets/img/elevator-mood-lift-button.png' | relative_url }}"
+        alt="Elevator Uplifts"
+        width="300"
+        height="300"
         loading="eager"
         decoding="async"
       >
-      <img 
-        src="{{ '/assets/img/interurbanist.png' | relative_url }}"
-        alt=""
-        class="brand-logo brand-logo--compact"
-        width="1504"
-        height="158"
-        loading="eager"
-        decoding="async"
-      >
-    </span>
-    <span class="sr-only">The Interurbanist</span>
-  </a>
+    </a>
+    {% endif %}
+  </div>
 </div>
 <p class="brand-tagline">SHAG Interurban's Arts, Style, and Entertainment publication</p>
