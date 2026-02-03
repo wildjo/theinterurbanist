@@ -11,16 +11,22 @@
   // ==========================================================================
 
   const header = qs(".site-header");
+  const isSingleEntry = document.body.classList.contains("single-entry");
   let lastScroll = 0;
   const collapseThreshold = 100;
 
   function handleScroll() {
     if (!header) return;
-    const currentScroll = window.scrollY;
-
-    if (currentScroll > collapseThreshold) {
+    if (isSingleEntry) {
       header.classList.add("collapsed");
-    } else {
+      return;
+    }
+    const currentScroll = window.scrollY;
+    const scrollingDown = currentScroll > lastScroll;
+
+    if (currentScroll > collapseThreshold && scrollingDown) {
+      header.classList.add("collapsed");
+    } else if (currentScroll <= collapseThreshold) {
       header.classList.remove("collapsed");
     }
 
@@ -28,6 +34,7 @@
   }
 
   window.addEventListener("scroll", handleScroll, { passive: true });
+  document.addEventListener("DOMContentLoaded", handleScroll);
 
   // ==========================================================================
   // View Switching (Timeline ↔ Sections)

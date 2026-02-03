@@ -35,7 +35,7 @@
   <meta property="og:type" content="article">
   {% endif %}
 </head>
-<body>
+<body class="{% if page.layout == 'entry' %}single-entry{% endif %}">
   <header class="site-header">
     {% include header.html %}
   </header>

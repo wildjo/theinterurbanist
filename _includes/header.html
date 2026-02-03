@@ -1,13 +1,27 @@
 <a class="skip" href="#content">Skip to content</a>
 <div class="brand">
   <a href="{{ '/' | relative_url }}" aria-label="The Interurbanist home">
-    <img 
-      src="{{ '/assets/img/shag-bicyclist-flag-1760x465.png' | relative_url }}"
-      alt="The Interurbanist" 
-      class="brand-logo"
-      width="1760"
-      height="465"
-    >
+    <span class="brand-logo-wrap" aria-hidden="true">
+      <img 
+        src="{{ '/assets/img/shag-bicyclist-flag-1760x465.png' | relative_url }}"
+        alt=""
+        class="brand-logo brand-logo--full"
+        width="1760"
+        height="465"
+        loading="eager"
+        decoding="async"
+      >
+      <img 
+        src="{{ '/assets/img/interurbanist.png' | relative_url }}"
+        alt=""
+        class="brand-logo brand-logo--compact"
+        width="1504"
+        height="158"
+        loading="eager"
+        decoding="async"
+      >
+    </span>
+    <span class="sr-only">The Interurbanist</span>
   </a>
 </div>
 <p class="brand-tagline">SHAG Interurban's Arts, Style, and Entertainment publication</p>

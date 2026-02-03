@@ -84,6 +84,18 @@ img {
   display: block;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Skip link */
 .skip {
   position: absolute;
@@ -111,11 +123,12 @@ img {
   z-index: 100;
   background: var(--panel);
   border-bottom: 3px solid var(--frame);
-  transition: padding 0.3s ease, box-shadow 0.3s ease;
+  transition: padding 0.3s ease, box-shadow 0.3s ease, height 0.3s ease;
 }
 
 .site-header.collapsed {
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  height: 50px;
 }
 
 /* Brand container - centered */
@@ -131,21 +144,90 @@ img {
 }
 
 .site-header.collapsed .brand {
-  padding: var(--space-sm) var(--space-lg);
+  padding: 0 var(--space-lg);
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Header logo - centered, cross-browser compatible */
-.brand-logo {
+.brand-logo-wrap {
+  position: relative;
   display: block;
-  max-width: 500px;
+  width: 100%;
+  max-width: 520px;
+  height: 160px;
+  margin: 0 auto;
+  transition: height 0.3s ease, max-width 0.3s ease;
+}
+
+.brand-logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   width: 100%;
   height: auto;
-  margin: 0 auto;
-  transition: max-width 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.brand-logo--full {
+  opacity: 1;
+}
+
+.brand-logo--compact {
+  opacity: 0;
 }
 
 .site-header.collapsed .brand-logo {
-  max-width: 350px;
+  transform: translate(-50%, -50%) scale(0.98);
+}
+
+.site-header.collapsed .brand-logo-wrap {
+  height: 50px;
+  max-width: 500px;
+}
+
+.site-header.collapsed .brand-logo--full {
+  opacity: 0;
+}
+
+.site-header.collapsed .brand-logo--compact {
+  opacity: 1;
+}
+
+.single-entry .site-header {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.single-entry .site-header,
+.single-entry .site-header .brand {
+  height: 50px;
+}
+
+.single-entry .site-header .brand {
+  padding: 0 var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.single-entry .brand-logo-wrap {
+  height: 50px;
+  max-width: 500px;
+}
+
+.single-entry .brand-logo--full {
+  opacity: 0;
+}
+
+.single-entry .brand-logo--compact {
+  opacity: 1;
+}
+
+.single-entry .brand-tagline {
+  display: none;
 }
 
 /* Site title and description (hidden when using SVG logos) */
