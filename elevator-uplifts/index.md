@@ -2,6 +2,7 @@
 layout: default
 title: Elevator Uplifts
 permalink: /elevator-uplifts/
+header_compact: true
 ---
 
 <div
