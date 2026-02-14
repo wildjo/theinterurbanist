@@ -1,4 +1,5 @@
 ---
+layout: page
 title: Legal & Licenses
 permalink: /legal/
 ---
